@@ -1,24 +1,38 @@
 <?php
-/**
- * MBO Cinemas - Centrale Configuratie
- */
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Database configuratie
-define('DB_HOST', getenv('DB_HOST') ?: 'db');
-define('DB_NAME', getenv('DB_NAME') ?: 'phples');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: 'supergeheim');
-define('DB_PORT', getenv('DB_PORT') ?: '3306');
+$dbHost = getenv('DB_HOST');
+if (!$dbHost) {
+    $dbHost = 'db';
+}
+$dbName = getenv('DB_NAME');
+if (!$dbName) {
+    $dbName = 'phples';
+}
+$dbUser = getenv('DB_USER');
+if (!$dbUser) {
+    $dbUser = 'root';
+}
+$dbPass = getenv('DB_PASS');
+if (!$dbPass) {
+    $dbPass = 'supergeheim';
+}
+$dbPort = getenv('DB_PORT');
+if (!$dbPort) {
+    $dbPort = '3306';
+}
 
-// Algemene instellingen
+define('DB_HOST', $dbHost);
+define('DB_NAME', $dbName);
+define('DB_USER', $dbUser);
+define('DB_PASS', $dbPass);
+define('DB_PORT', $dbPort);
+
 define('SITE_NAME', 'MBO Cinemas');
 define('TICKET_PRICE', 11.50);
 
-// Autoloader voor classes
 spl_autoload_register(function ($class_name) {
     $file = __DIR__ . '/classes/' . $class_name . '.php';
     if (file_exists($file)) {
@@ -26,7 +40,6 @@ spl_autoload_register(function ($class_name) {
     }
 });
 
-// Helper functies voor veiligheid en gemak
 function sanitize($data) {
     return htmlspecialchars(trim((string)$data), ENT_QUOTES, 'UTF-8');
 }

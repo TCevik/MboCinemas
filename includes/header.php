@@ -1,35 +1,25 @@
-<?php
-require_once __DIR__ . '/../config.php';
-$currentPage = basename($_SERVER['PHP_SELF']);
-?>
 <!DOCTYPE html>
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= isset($pageTitle) ? sanitize($pageTitle) . ' - ' : '' ?><?= SITE_NAME ?></title>
+    <title><?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
-
-<header class="navbar">
-    <div class="nav-container">
-        <a href="/index.php" class="brand">
-            🎬 <?= SITE_NAME ?>
-        </a>
-
-        <ul class="nav-links">
-            <li><a href="/index.php" class="<?= $currentPage === 'index.php' && !str_contains($_SERVER['REQUEST_URI'], '/admin/') ? 'active' : '' ?>">Films</a></li>
-            <li><a href="/my-reservations.php" class="<?= $currentPage === 'my-reservations.php' ? 'active' : '' ?>">Mijn Reserveringen</a></li>
-            
+<header class="site-header">
+    <div class="container header-inner">
+        <a href="/index.php" class="logo"><?php echo SITE_NAME; ?></a>
+        <nav class="main-nav">
+            <a href="/index.php">Films</a>
+            <a href="/my-reservations.php">Mijn Reserveringen</a>
             <?php if (isLoggedIn()): ?>
-                <li><a href="/admin/index.php" class="<?= str_contains($_SERVER['REQUEST_URI'], '/admin/') ? 'active' : '' ?>">Beheer (<?= sanitize($_SESSION['user_name']) ?>)</a></li>
-                <li><a href="/logout.php" class="btn btn-sm btn-secondary">Uitloggen</a></li>
+                <a href="/admin.php">Beheer</a>
+                <a href="/logout.php">Uitloggen</a>
             <?php else: ?>
-                <li><a href="/login.php" class="btn-nav">Medewerkers</a></li>
+                <a href="/login.php">Medewerker Login</a>
             <?php endif; ?>
-        </ul>
+        </nav>
     </div>
 </header>
-
 <main class="container">

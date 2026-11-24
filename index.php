@@ -1,91 +1,117 @@
 <?php
-$pageTitle = "Nu in de Bioscoop";
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/config.php';
 
-$movieModel = new Movie();
+$database = new Database();
+$db = $database->getConnection();
+$movieModel = new Movie($db);
 
-$search = $_GET['search'] ?? null;
-$genre = $_GET['genre'] ?? null;
-$location_id = isset($_GET['location']) && is_numeric($_GET['location']) ? (int)$_GET['location'] : null;
-$date = $_GET['date'] ?? null;
+$search = '';
+if (isset($_GET['search'])) {
+    $search = trim($_GET['search']);
+}
 
-$movies = $movieModel->getAll($genre, $location_id, $date, $search);
+$genre = '';
+if (isset($_GET['genre'])) {
+    $genre = trim($_GET['genre']);
+}
+
+$locationId = '';
+if (isset($_GET['location_id'])) {
+    $locationId = trim($_GET['location_id']);
+}
+
+$date = '';
+if (isset($_GET['date'])) {
+    $date = trim($_GET['date']);
+}
+
+$screenings = $movieModel->getFilteredScreenings($search, $genre, $locationId, $date);
 $genres = $movieModel->getGenres();
 $locations = $movieModel->getLocations();
+
+require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div class="hero">
-    <h1>Nu in de Bioscoop</h1>
-    <p>Ontdek de nieuwste topfilms, bekijk de actuele vertoningen en reserveer eenvoudig je bioscoopstoelen online.</p>
-</div>
-
-<form method="GET" action="/index.php" class="filter-bar">
-    <div class="form-group">
-        <label for="search-movie">Zoek film</label>
-        <input type="text" id="search-movie" name="search" class="form-control" placeholder="Typ filmtitel..." value="<?= sanitize($search ?? '') ?>">
+<section class="page-header">
+    <h1>Actueel Filmaanbod</h1>
+    <div id="unfinished-reservation-banner" class="alert alert-info hidden">
+        <span>Je hebt nog een niet-afgeronde reservering openstaan.</span>
+        <a id="resume-reservation-link" href="#" class="btn btn-small">Verder gaan</a>
+        <button type="button" id="discard-draft-btn" class="btn btn-small btn-secondary">Wissen</button>
     </div>
+</section>
 
-    <div class="form-group">
-        <label for="filter-genre">Genre</label>
-        <select id="filter-genre" name="genre" class="form-control">
+<section class="filter-section">
+    <form method="GET" action="/index.php" id="filter-form" class="filter-form">
+        <input type="text" name="search" id="filter-search" placeholder="Zoek op filmtitel..." value="<?php echo sanitize($search); ?>">
+        <select name="genre" id="filter-genre">
             <option value="">Alle genres</option>
-            <?php foreach ($genres as $g): ?>
-                <option value="<?= sanitize($g) ?>" <?= ($genre === $g) ? 'selected' : '' ?>><?= sanitize($g) ?></option>
+            <?php foreach ($genres as $genreItem): ?>
+                <?php
+                $selected = '';
+                if ($genre === $genreItem) {
+                    $selected = 'selected';
+                }
+                ?>
+                <option value="<?php echo sanitize($genreItem); ?>" <?php echo $selected; ?>>
+                    <?php echo sanitize($genreItem); ?>
+                </option>
             <?php endforeach; ?>
         </select>
-    </div>
-
-    <div class="form-group">
-        <label for="filter-location">Bioscoop</label>
-        <select id="filter-location" name="location" class="form-control">
+        <select name="location_id" id="filter-location">
             <option value="">Alle locaties</option>
-            <?php foreach ($locations as $loc): ?>
-                <option value="<?= $loc['id'] ?>" <?= ($location_id == $loc['id']) ? 'selected' : '' ?>><?= sanitize($loc['name']) ?></option>
+            <?php foreach ($locations as $location): ?>
+                <?php
+                $selected = '';
+                if ((string)$locationId === (string)$location['id']) {
+                    $selected = 'selected';
+                }
+                ?>
+                <option value="<?php echo $location['id']; ?>" <?php echo $selected; ?>>
+                    <?php echo sanitize($location['name']); ?>
+                </option>
             <?php endforeach; ?>
         </select>
-    </div>
-
-    <div class="form-group">
-        <label for="filter-date">Datum</label>
-        <input type="date" id="filter-date" name="date" class="form-control" value="<?= sanitize($date ?? '') ?>">
-    </div>
-
-    <div class="form-group">
+        <input type="date" name="date" id="filter-date" value="<?php echo sanitize($date); ?>">
         <button type="submit" class="btn">Filteren</button>
-    </div>
-</form>
+        <a href="/index.php" class="btn btn-secondary">Reset</a>
+    </form>
+</section>
 
-<div id="no-movies-found" style="display: <?= empty($movies) ? 'block' : 'none' ?>; text-align: center; padding: 40px 0;">
-    <h3 style="color: var(--text-muted);">Geen films gevonden die aan de filters voldoen.</h3>
-    <a href="/index.php" class="btn btn-secondary" style="margin-top: 15px;">Filters wissen</a>
-</div>
-
-<div class="movies-grid">
-    <?php foreach ($movies as $movie): 
-        $screenings = $movieModel->getScreeningsByMovie($movie['id']);
-        $locationIds = array_unique(array_column($screenings, 'location_id'));
-        $dates = array_unique(array_map(fn($s) => substr($s['screening_time'], 0, 10), $screenings));
-    ?>
-        <div class="movie-card movie-card-item" 
-             data-title="<?= strtolower(sanitize($movie['title'])) ?>"
-             data-genre="<?= sanitize($movie['genre']) ?>"
-             data-locations="<?= implode(',', $locationIds) ?>"
-             data-dates="<?= implode(',', $dates) ?>">
-            <img src="<?= sanitize($movie['poster_url'] ?: '/assets/img/default-poster.jpg') ?>" 
-                 alt="<?= sanitize($movie['title']) ?>" 
-                 class="movie-poster"
-                 loading="lazy">
-            <div class="movie-info">
-                <div class="movie-meta">
-                    <span class="badge"><?= sanitize($movie['genre']) ?></span>
-                    <span class="badge badge-muted"><?= (int)$movie['duration_minutes'] ?> min</span>
+<section class="movies-grid" id="movies-grid">
+    <?php if (empty($screenings)): ?>
+        <p>Geen voorstellingen gevonden voor de gekozen filters.</p>
+    <?php else: ?>
+        <?php foreach ($screenings as $screening): ?>
+            <?php
+            $available = $screening['capacity'] - $screening['booked_seats'];
+            $screeningTimestamp = strtotime($screening['screening_time']);
+            $formattedDateTime = date('d-m-Y H:i', $screeningTimestamp);
+            $filterDate = date('Y-m-d', $screeningTimestamp);
+            ?>
+            <article class="card movie-card"
+                     data-title="<?php echo strtolower(sanitize($screening['title'])); ?>"
+                     data-genre="<?php echo sanitize($screening['genre']); ?>"
+                     data-location="<?php echo $screening['location_id']; ?>"
+                     data-date="<?php echo $filterDate; ?>">
+                <div class="card-body">
+                    <h2><?php echo sanitize($screening['title']); ?></h2>
+                    <p class="meta"><?php echo sanitize($screening['genre']); ?> &bull; <?php echo $screening['duration_minutes']; ?> min</p>
+                    <p class="description"><?php echo sanitize($screening['description']); ?></p>
+                    <div class="screening-info">
+                        <p><strong>Locatie:</strong> <?php echo sanitize($screening['location_name']); ?> (<?php echo sanitize($screening['hall_name']); ?>)</p>
+                        <p><strong>Datum &amp; Tijd:</strong> <?php echo $formattedDateTime; ?></p>
+                        <p><strong>Beschikbaar:</strong> <?php echo $available; ?> van <?php echo $screening['capacity']; ?> stoelen</p>
+                    </div>
+                    <?php if ($available > 0): ?>
+                        <a href="/reserve.php?screening_id=<?php echo $screening['screening_id']; ?>" class="btn">Kaartjes Reserveren</a>
+                    <?php else: ?>
+                        <span class="badge badge-danger">Uitverkocht</span>
+                    <?php endif; ?>
                 </div>
-                <h2 class="movie-title"><?= sanitize($movie['title']) ?></h2>
-                <p class="movie-desc"><?= sanitize($movie['description']) ?></p>
-                <a href="/reserve.php?movie_id=<?= $movie['id'] ?>" class="btn btn-block">Bekijk tijden &amp; Reserveer</a>
-            </div>
-        </div>
-    <?php endforeach; ?>
-</div>
+            </article>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</section>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

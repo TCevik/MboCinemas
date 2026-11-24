@@ -1,161 +1,144 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('search-movie');
+document.addEventListener('DOMContentLoaded', function () {
+    const DRAFT_KEY = 'mbo_cinemas_reservation_draft';
+
+    const confirmedBox = document.getElementById('reservation-confirmed');
+    if (confirmedBox && confirmedBox.dataset.clearDraft === 'true') {
+        localStorage.removeItem(DRAFT_KEY);
+    }
+
+    const banner = document.getElementById('unfinished-reservation-banner');
+    const resumeLink = document.getElementById('resume-reservation-link');
+    const discardBtn = document.getElementById('discard-draft-btn');
+    if (banner && resumeLink) {
+        const saved = localStorage.getItem(DRAFT_KEY);
+        if (saved) {
+            try {
+                const draft = JSON.parse(saved);
+                if (draft && draft.screening_id) {
+                    resumeLink.href = '/reserve.php?screening_id=' + encodeURIComponent(draft.screening_id);
+                    banner.classList.remove('hidden');
+                }
+            } catch (e) {
+                localStorage.removeItem(DRAFT_KEY);
+            }
+        }
+        if (discardBtn) {
+            discardBtn.addEventListener('click', function () {
+                localStorage.removeItem(DRAFT_KEY);
+                banner.classList.add('hidden');
+            });
+        }
+    }
+
+    const searchInput = document.getElementById('filter-search');
     const genreSelect = document.getElementById('filter-genre');
     const locationSelect = document.getElementById('filter-location');
     const dateInput = document.getElementById('filter-date');
-    const movieCards = document.querySelectorAll('.movie-card-item');
-    const noMoviesFound = document.getElementById('no-movies-found');
+    const movieCards = document.querySelectorAll('.movie-card');
 
-    if (movieCards.length > 0) {
-        const filterMovies = () => {
-            const search = (searchInput ? searchInput.value : '').trim().toLowerCase();
-            const genre = genreSelect ? genreSelect.value : '';
-            const location = locationSelect ? locationSelect.value : '';
-            const date = dateInput ? dateInput.value : '';
-            let visible = 0;
+    function filterMovies() {
+        const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const genre = genreSelect ? genreSelect.value : '';
+        const location = locationSelect ? locationSelect.value : '';
+        const date = dateInput ? dateInput.value : '';
 
-            movieCards.forEach(card => {
-                const title = card.dataset.title || '';
-                const cardGenre = card.dataset.genre || '';
-                const locations = card.dataset.locations ? card.dataset.locations.split(',') : [];
-                const dates = card.dataset.dates ? card.dataset.dates.split(',') : [];
+        movieCards.forEach(function (card) {
+            const matchTitle = search === '' || card.dataset.title.includes(search);
+            const matchGenre = genre === '' || card.dataset.genre === genre;
+            const matchLocation = location === '' || card.dataset.location === location;
+            const matchDate = date === '' || card.dataset.date === date;
 
-                const matchSearch = !search || title.includes(search);
-                const matchGenre = !genre || cardGenre === genre;
-                const matchLocation = !location || locations.includes(location);
-                const matchDate = !date || dates.includes(date);
-
-                if (matchSearch && matchGenre && matchLocation && matchDate) {
-                    card.style.display = 'flex';
-                    visible++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            if (noMoviesFound) {
-                noMoviesFound.style.display = visible === 0 ? 'block' : 'none';
-            }
-        };
-
-        [searchInput, genreSelect, locationSelect, dateInput].forEach(el => {
-            if (el) {
-                el.addEventListener('input', filterMovies);
-                el.addEventListener('change', filterMovies);
+            if (matchTitle && matchGenre && matchLocation && matchDate) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
             }
         });
     }
 
-    const confirmationBox = document.getElementById('confirmation-box');
-    if (confirmationBox && confirmationBox.dataset.confirmed === 'true') {
-        localStorage.removeItem('mbo_pending_reservation');
+    if (movieCards.length > 0) {
+        if (searchInput) searchInput.addEventListener('input', filterMovies);
+        if (genreSelect) genreSelect.addEventListener('change', filterMovies);
+        if (locationSelect) locationSelect.addEventListener('change', filterMovies);
+        if (dateInput) dateInput.addEventListener('change', filterMovies);
     }
 
-    const resForm = document.getElementById('reservation-form');
-    if (resForm) {
-        const seatsInput = document.getElementById('seats');
+    const reservationForm = document.getElementById('reservation-form');
+    if (reservationForm) {
+        const screeningId = reservationForm.dataset.screeningId;
         const nameInput = document.getElementById('customer_name');
         const emailInput = document.getElementById('customer_email');
         const phoneInput = document.getElementById('customer_phone');
-        const totalPriceEl = document.getElementById('total-price');
-        const banner = document.getElementById('pending-reservation-banner');
-        const restoreBtn = document.getElementById('restore-draft-btn');
-        const dismissBtn = document.getElementById('dismiss-draft-btn');
-        const ticketPrice = parseFloat(resForm.dataset.ticketPrice || '11.50');
-        const screeningId = resForm.dataset.screeningId;
+        const seatsInput = document.getElementById('seats');
+        const priceDisplay = document.getElementById('total-price-display');
 
-        const updateTotal = () => {
-            if (!totalPriceEl || !seatsInput) return;
-            const seats = Math.max(1, parseInt(seatsInput.value, 10) || 1);
-            totalPriceEl.textContent = '€ ' + (seats * ticketPrice).toFixed(2).replace('.', ',');
-        };
-
-        const getCookie = (name) => {
-            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-            return match ? decodeURIComponent(match[2]) : null;
-        };
-
-        const setCookie = (name, value, days) => {
-            const expires = new Date(Date.now() + days * 86400000).toUTCString();
-            document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
-        };
-
-        const savedCookie = getCookie('mbo_customer_data');
-        if (savedCookie) {
+        const saved = localStorage.getItem(DRAFT_KEY);
+        if (saved) {
             try {
-                const data = JSON.parse(savedCookie);
-                if (nameInput && !nameInput.value && data.name) nameInput.value = data.name;
-                if (emailInput && !emailInput.value && data.email) emailInput.value = data.email;
-                if (phoneInput && !phoneInput.value && data.phone) phoneInput.value = data.phone;
-            } catch (e) {}
-        }
-
-        const savedDraft = localStorage.getItem('mbo_pending_reservation');
-        if (savedDraft && banner) {
-            try {
-                const draft = JSON.parse(savedDraft);
-                if (draft.screeningId === screeningId) {
-                    banner.style.display = 'flex';
-                    if (restoreBtn) {
-                        restoreBtn.addEventListener('click', () => {
-                            if (seatsInput && draft.seats) seatsInput.value = draft.seats;
-                            if (nameInput && draft.name) nameInput.value = draft.name;
-                            if (emailInput && draft.email) emailInput.value = draft.email;
-                            if (phoneInput && draft.phone) phoneInput.value = draft.phone;
-                            updateTotal();
-                            banner.style.display = 'none';
-                        });
-                    }
-                    if (dismissBtn) {
-                        dismissBtn.addEventListener('click', () => {
-                            localStorage.removeItem('mbo_pending_reservation');
-                            banner.style.display = 'none';
-                        });
-                    }
+                const draft = JSON.parse(saved);
+                if (draft && String(draft.screening_id) === String(screeningId)) {
+                    if (draft.name && nameInput.value === '') nameInput.value = draft.name;
+                    if (draft.email && emailInput.value === '') emailInput.value = draft.email;
+                    if (draft.phone) phoneInput.value = draft.phone;
+                    if (draft.seats) seatsInput.value = draft.seats;
                 }
-            } catch (e) {}
+            } catch (e) {
+                localStorage.removeItem(DRAFT_KEY);
+            }
         }
 
-        const saveDraft = () => {
-            localStorage.setItem('mbo_pending_reservation', JSON.stringify({
-                screeningId,
-                seats: seatsInput ? seatsInput.value : 1,
-                name: nameInput ? nameInput.value : '',
-                email: emailInput ? emailInput.value : '',
-                phone: phoneInput ? phoneInput.value : ''
-            }));
-        };
+        function updateTotalPrice() {
+            const count = parseInt(seatsInput.value, 10) || 0;
+            const total = (count * 11.50).toFixed(2).replace('.', ',');
+            priceDisplay.textContent = '\u20AC' + total;
+        }
 
-        [seatsInput, nameInput, emailInput, phoneInput].forEach(el => {
-            if (el) {
-                el.addEventListener('input', () => {
-                    updateTotal();
-                    saveDraft();
-                });
-            }
+        function saveDraft() {
+            const draft = {
+                screening_id: screeningId,
+                name: nameInput.value,
+                email: emailInput.value,
+                phone: phoneInput.value,
+                seats: seatsInput.value
+            };
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        }
+
+        [nameInput, emailInput, phoneInput, seatsInput].forEach(function (input) {
+            input.addEventListener('input', function () {
+                saveDraft();
+                if (input === seatsInput) {
+                    updateTotalPrice();
+                }
+            });
         });
 
-        resForm.addEventListener('submit', (e) => {
-            const name = nameInput ? nameInput.value.trim() : '';
-            const email = emailInput ? emailInput.value.trim() : '';
-            const phone = phoneInput ? phoneInput.value.trim() : '';
-            const seats = seatsInput ? parseInt(seatsInput.value, 10) : 0;
+        updateTotalPrice();
 
-            if (!name || !email || !phone || seats < 1) {
+        reservationForm.addEventListener('submit', function (e) {
+            const seats = parseInt(seatsInput.value, 10);
+            const maxSeats = parseInt(seatsInput.max, 10);
+            if (nameInput.value.trim() === '' || emailInput.value.trim() === '' || phoneInput.value.trim() === '') {
                 e.preventDefault();
-                alert('Vul alle velden correct in.');
+                alert('Vul alle verplichte velden in.');
                 return;
             }
-
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            if (isNaN(seats) || seats < 1 || seats > maxSeats) {
                 e.preventDefault();
-                alert('Vul een geldig e-mailadres in.');
+                alert('Kies een geldig aantal kaartjes (maximaal ' + maxSeats + ').');
                 return;
             }
-
-            setCookie('mbo_customer_data', JSON.stringify({ name, email, phone }), 30);
+            if (!confirm('Weet u zeker dat u ' + seats + ' kaartje(s) wilt reserveren?')) {
+                e.preventDefault();
+            }
         });
-
-        updateTotal();
     }
+
+    document.querySelectorAll('.confirm-cancel').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            if (!confirm('Weet u zeker dat u deze actie wilt uitvoeren?')) {
+                e.preventDefault();
+            }
+        });
+    });
 });
