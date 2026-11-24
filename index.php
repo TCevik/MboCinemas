@@ -1,6 +1,6 @@
 <?php
 // Laad configuratie, database-instellingen en autoloader
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/classes/Database.php';
 
 // Maak databaseverbinding en instantieer het Movie-model
 $database = new Database();

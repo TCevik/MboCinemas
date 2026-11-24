@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/classes/Database.php';
 
 // Als de medewerker al is ingelogd, stuur direct door naar het beheerpaneel
 if (isLoggedIn()) {

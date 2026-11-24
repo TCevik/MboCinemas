@@ -1,0 +1,1848 @@
+﻿=== style.css ===
+/* ==========================================================================
+   Algemene reset & basisopmaak voor MBO Cinemas
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+    background-color: #f4f4f4;
+    color: #222;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.site-header {
+    background-color: #1a1a2e;
+    color: #fff;
+    padding: 14px 0;
+    margin-bottom: 24px;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.logo {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.main-nav {
+    display: flex;
+    gap: 16px;
+}
+
+.main-nav a {
+    color: #ddd;
+    text-decoration: none;
+}
+
+.main-nav a:hover {
+    color: #fff;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.filter-section {
+    margin-bottom: 24px;
+}
+
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-form input,
+.filter-form select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.meta {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.screening-info {
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.form-card {
+    padding: 20px;
+    max-width: 550px;
+    margin-bottom: 24px;
+}
+
+.screening-summary {
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.total-price {
+    margin-bottom: 14px;
+    font-size: 1.1rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 14px;
+    background-color: #1a1a2e;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn:hover {
+    background-color: #2c2c4e;
+}
+
+.btn-secondary {
+    background-color: #666;
+}
+
+.btn-danger {
+    background-color: #c0392b;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    margin-bottom: 24px;
+}
+
+.data-table th,
+.data-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #f0f0f0;
+}
+
+.inline-form {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.input-small {
+    width: 60px;
+    padding: 4px;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #fff;
+}
+
+.badge-success {
+    background-color: #27ae60;
+}
+
+.badge-danger {
+    background-color: #c0392b;
+}
+
+.admin-section {
+    margin-bottom: 40px;
+}
+
+.admin-section h2 {
+    margin-bottom: 14px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+    color: #666;
+    border-top: 1px solid #ddd;
+}
+
+=== main.js ===
+// Wacht tot de volledige HTML-pagina is geladen voordat JavaScript wordt uitgevoerd
+document.addEventListener('DOMContentLoaded', function () {
+    // Sleutel waaronder een niet-afgeronde reservering in localStorage wordt bewaard
+    const DRAFT_KEY = 'mbo_cinemas_reservation_draft';
+
+    // 1. CONCEPT WISSEN NA BEVESTIGING
+    // Als de reservering is bevestigd (reserve.php), verwijder dan het opgeslagen concept
+    const confirmedBox = document.getElementById('reservation-confirmed');
+    if (confirmedBox && confirmedBox.dataset.clearDraft === 'true') {
+        localStorage.removeItem(DRAFT_KEY);
+    }
+
+    // 2. BANNER VOOR NIET-AFGERONDE RESERVERING (index.php)
+    // Controleert of er nog een concept in localStorage staat en toont zo ja de hervat-banner
+    const banner = document.getElementById('unfinished-reservation-banner');
+    const resumeLink = document.getElementById('resume-reservation-link');
+    const discardBtn = document.getElementById('discard-draft-btn');
+    if (banner && resumeLink) {
+        const saved = localStorage.getItem(DRAFT_KEY);
+        if (saved) {
+            try {
+                const draft = JSON.parse(saved);
+                if (draft && draft.screening_id) {
+                    resumeLink.href = '/reserve.php?screening_id=' + encodeURIComponent(draft.screening_id);
+                    banner.classList.remove('hidden');
+                }
+            } catch (e) {
+                // Verwijder corrupte data uit localStorage
+                localStorage.removeItem(DRAFT_KEY);
+            }
+        }
+        // Knop om het opgeslagen concept handmatig te wissen
+        if (discardBtn) {
+            discardBtn.addEventListener('click', function () {
+                localStorage.removeItem(DRAFT_KEY);
+                banner.classList.add('hidden');
+            });
+        }
+    }
+
+    // 3. LIVE FILTEREN VAN FILMS (index.php)
+    // Filtert de filmkaarten direct in de browser zonder de pagina opnieuw te laden
+    const searchInput = document.getElementById('filter-search');
+    const genreSelect = document.getElementById('filter-genre');
+    const locationSelect = document.getElementById('filter-location');
+    const dateInput = document.getElementById('filter-date');
+    const movieCards = document.querySelectorAll('.movie-card');
+
+    function filterMovies() {
+        const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const genre = genreSelect ? genreSelect.value : '';
+        const location = locationSelect ? locationSelect.value : '';
+        const date = dateInput ? dateInput.value : '';
+
+        movieCards.forEach(function (card) {
+            const matchTitle = search === '' || card.dataset.title.includes(search);
+            const matchGenre = genre === '' || card.dataset.genre === genre;
+            const matchLocation = location === '' || card.dataset.location === location;
+            const matchDate = date === '' || card.dataset.date === date;
+
+            // Toon de kaart alleen als alle actieve filters overeenkomen
+            if (matchTitle && matchGenre && matchLocation && matchDate) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+    }
+
+    if (movieCards.length > 0) {
+        if (searchInput) searchInput.addEventListener('input', filterMovies);
+        if (genreSelect) genreSelect.addEventListener('change', filterMovies);
+        if (locationSelect) locationSelect.addEventListener('change', filterMovies);
+        if (dateInput) dateInput.addEventListener('change', filterMovies);
+    }
+
+    // 4. RESERVERINGSFORMULIER: CONCEPT OPSLAAN, TOTAALPRIJS & VALIDATIE (reserve.php)
+    const reservationForm = document.getElementById('reservation-form');
+    if (reservationForm) {
+        const screeningId = reservationForm.dataset.screeningId;
+        const nameInput = document.getElementById('customer_name');
+        const emailInput = document.getElementById('customer_email');
+        const phoneInput = document.getElementById('customer_phone');
+        const seatsInput = document.getElementById('seats');
+        const priceDisplay = document.getElementById('total-price-display');
+
+        // Herstel eerder ingevulde gegevens als het concept bij deze voorstelling hoort
+        const saved = localStorage.getItem(DRAFT_KEY);
+        if (saved) {
+            try {
+                const draft = JSON.parse(saved);
+                if (draft && String(draft.screening_id) === String(screeningId)) {
+                    if (draft.name && nameInput.value === '') nameInput.value = draft.name;
+                    if (draft.email && emailInput.value === '') emailInput.value = draft.email;
+                    if (draft.phone) phoneInput.value = draft.phone;
+                    if (draft.seats) seatsInput.value = draft.seats;
+                }
+            } catch (e) {
+                localStorage.removeItem(DRAFT_KEY);
+            }
+        }
+
+        // Berekent en toont de totaalprijs live (aantal kaartjes * â‚¬11,50)
+        function updateTotalPrice() {
+            const count = parseInt(seatsInput.value, 10) || 0;
+            const total = (count * 11.50).toFixed(2).replace('.', ',');
+            priceDisplay.textContent = '\u20AC' + total;
+        }
+
+        // Slaat de huidige invoer tussentijds op in localStorage
+        function saveDraft() {
+            const draft = {
+                screening_id: screeningId,
+                name: nameInput.value,
+                email: emailInput.value,
+                phone: phoneInput.value,
+                seats: seatsInput.value
+            };
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        }
+
+        // Luister naar wijzigingen in alle invoervelden
+        [nameInput, emailInput, phoneInput, seatsInput].forEach(function (input) {
+            input.addEventListener('input', function () {
+                saveDraft();
+                if (input === seatsInput) {
+                    updateTotalPrice();
+                }
+            });
+        });
+
+        updateTotalPrice();
+
+        // Client-side validatie en bevestigingspop-up bij het versturen van het formulier
+        reservationForm.addEventListener('submit', function (e) {
+            const seats = parseInt(seatsInput.value, 10);
+            const maxSeats = parseInt(seatsInput.max, 10);
+            if (nameInput.value.trim() === '' || emailInput.value.trim() === '' || phoneInput.value.trim() === '') {
+                e.preventDefault();
+                alert('Vul alle verplichte velden in.');
+                return;
+            }
+            if (isNaN(seats) || seats < 1 || seats > maxSeats) {
+                e.preventDefault();
+                alert('Kies een geldig aantal kaartjes (maximaal ' + maxSeats + ').');
+                return;
+            }
+            if (!confirm('Weet u zeker dat u ' + seats + ' kaartje(s) wilt reserveren?')) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // 5. BEVESTIGINGSPOP-UP VOOR VERWIJDEREN / ANNULEREN
+    // Voorkomt dat bezoekers of medewerkers per ongeluk iets verwijderen of annuleren
+    document.querySelectorAll('.confirm-cancel').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            if (!confirm('Weet u zeker dat u deze actie wilt uitvoeren?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+
+=== Database.php ===
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+define('SITE_NAME', 'MBO Cinemas');
+define('TICKET_PRICE', 11.50);
+
+spl_autoload_register(function ($className) {
+    $file = __DIR__ . '/' . $className . '.php';
+    if (file_exists($file)) {
+        require_once $file;
+    }
+});
+
+function sanitize($data) {
+    return htmlspecialchars(trim((string)$data), ENT_QUOTES, 'UTF-8');
+}
+
+function redirect($url) {
+    header("Location: " . $url);
+    exit;
+}
+
+function isLoggedIn() {
+    return isset($_SESSION['user_id']);
+}
+
+function requireLogin() {
+    if (!isLoggedIn()) {
+        redirect('/login.php');
+    }
+}
+
+class Database {
+    private $pdo;
+
+    public function __construct() {
+        $host = getenv('DB_HOST');
+        if (!$host) {
+            $host = 'db';
+        }
+
+        $dbname = getenv('DB_NAME');
+        if (!$dbname) {
+            $dbname = 'phples';
+        }
+
+        $user = getenv('DB_USER');
+        if (!$user) {
+            $user = 'root';
+        }
+
+        $pass = getenv('DB_PASS');
+        if (!$pass) {
+            $pass = 'supergeheim';
+        }
+
+        $port = getenv('DB_PORT');
+        if (!$port) {
+            $port = '3306';
+        }
+
+        $dsn = "mysql:host=" . $host . ";port=" . $port . ";dbname=" . $dbname . ";charset=utf8mb4";
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false
+        ];
+        $this->pdo = new PDO($dsn, $user, $pass, $options);
+    }
+
+    public function getConnection() {
+        return $this->pdo;
+    }
+}
+
+=== Movie.php ===
+<?php
+class Movie {
+    private $db;
+
+    public function __construct($pdo) {
+        $this->db = $pdo;
+    }
+
+    public function getAllMovies() {
+        $stmt = $this->db->query("SELECT * FROM movies ORDER BY title ASC");
+        return $stmt->fetchAll();
+    }
+
+    public function getMovieById($id) {
+        $stmt = $this->db->prepare("SELECT * FROM movies WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    public function getGenres() {
+        $stmt = $this->db->query("SELECT DISTINCT genre FROM movies ORDER BY genre ASC");
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    public function getLocations() {
+        $stmt = $this->db->query("SELECT * FROM locations ORDER BY name ASC");
+        return $stmt->fetchAll();
+    }
+
+    public function getHalls() {
+        $sql = "SELECT h.*, l.name AS location_name
+                FROM halls h
+                JOIN locations l ON h.location_id = l.id
+                ORDER BY l.name ASC, h.name ASC";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    public function getFilteredScreenings($search = '', $genre = '', $locationId = '', $date = '') {
+        $sql = "SELECT s.id AS screening_id, s.screening_time,
+                       m.id AS movie_id, m.title, m.description, m.genre, m.duration_minutes,
+                       h.id AS hall_id, h.name AS hall_name, h.capacity,
+                       l.id AS location_id, l.name AS location_name, l.city,
+                       COALESCE(SUM(CASE WHEN r.status = 'actief' THEN r.seats ELSE 0 END), 0) AS booked_seats
+                FROM screenings s
+                JOIN movies m ON s.movie_id = m.id
+                JOIN halls h ON s.hall_id = h.id
+                JOIN locations l ON h.location_id = l.id
+                LEFT JOIN reservations r ON r.screening_id = s.id
+                WHERE 1=1";
+        $params = [];
+
+        if ($search !== '') {
+            $sql .= " AND (m.title LIKE ? OR m.description LIKE ?)";
+            $params[] = '%' . $search . '%';
+            $params[] = '%' . $search . '%';
+        }
+        if ($genre !== '') {
+            $sql .= " AND m.genre = ?";
+            $params[] = $genre;
+        }
+        if ($locationId !== '') {
+            $sql .= " AND l.id = ?";
+            $params[] = $locationId;
+        }
+        if ($date !== '') {
+            $sql .= " AND DATE(s.screening_time) = ?";
+            $params[] = $date;
+        }
+
+        $sql .= " GROUP BY s.id ORDER BY s.screening_time ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    public function getScreeningById($id) {
+        $sql = "SELECT s.id AS screening_id, s.screening_time,
+                       m.id AS movie_id, m.title, m.description, m.genre, m.duration_minutes,
+                       h.id AS hall_id, h.name AS hall_name, h.capacity,
+                       l.id AS location_id, l.name AS location_name, l.city,
+                       COALESCE(SUM(CASE WHEN r.status = 'actief' THEN r.seats ELSE 0 END), 0) AS booked_seats
+                FROM screenings s
+                JOIN movies m ON s.movie_id = m.id
+                JOIN halls h ON s.hall_id = h.id
+                JOIN locations l ON h.location_id = l.id
+                LEFT JOIN reservations r ON r.screening_id = s.id
+                WHERE s.id = ?
+                GROUP BY s.id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    public function addMovie($title, $description, $genre, $duration) {
+        $stmt = $this->db->prepare("INSERT INTO movies (title, description, genre, duration_minutes) VALUES (?, ?, ?, ?)");
+        return $stmt->execute([$title, $description, $genre, $duration]);
+    }
+
+    public function updateMovie($id, $title, $description, $genre, $duration) {
+        $stmt = $this->db->prepare("UPDATE movies SET title = ?, description = ?, genre = ?, duration_minutes = ? WHERE id = ?");
+        return $stmt->execute([$title, $description, $genre, $duration, $id]);
+    }
+
+    public function deleteMovie($id) {
+        $stmt = $this->db->prepare("DELETE FROM movies WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    public function addScreening($movieId, $hallId, $screeningTime) {
+        $stmt = $this->db->prepare("INSERT INTO screenings (movie_id, hall_id, screening_time) VALUES (?, ?, ?)");
+        return $stmt->execute([$movieId, $hallId, $screeningTime]);
+    }
+
+    public function deleteScreening($id) {
+        $stmt = $this->db->prepare("DELETE FROM screenings WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+}
+
+=== Reservation.php ===
+<?php
+class Reservation {
+    private $db;
+
+    public function __construct($pdo) {
+        $this->db = $pdo;
+    }
+
+    public function create($screeningId, $name, $email, $phone, $seats) {
+        $code = strtoupper(substr(md5(uniqid((string)mt_rand(), true)), 0, 8));
+        $stmt = $this->db->prepare("INSERT INTO reservations (reservation_code, screening_id, customer_name, customer_email, customer_phone, seats, status) VALUES (?, ?, ?, ?, ?, ?, 'actief')");
+        $stmt->execute([$code, (int)$screeningId, $name, $email, $phone, (int)$seats]);
+        return $code;
+    }
+
+    public function getByEmail($email) {
+        $sql = "SELECT r.*, s.screening_time, m.title AS movie_title, h.name AS hall_name, h.capacity, l.name AS location_name
+                FROM reservations r
+                JOIN screenings s ON r.screening_id = s.id
+                JOIN movies m ON s.movie_id = m.id
+                JOIN halls h ON s.hall_id = h.id
+                JOIN locations l ON h.location_id = l.id
+                WHERE r.customer_email = ?
+                ORDER BY s.screening_time DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$email]);
+        return $stmt->fetchAll();
+    }
+
+    public function getById($id) {
+        $stmt = $this->db->prepare("SELECT * FROM reservations WHERE id = ?");
+        $stmt->execute([(int)$id]);
+        return $stmt->fetch();
+    }
+
+    public function updateSeats($id, $seats) {
+        $stmt = $this->db->prepare("UPDATE reservations SET seats = ? WHERE id = ? AND status = 'actief'");
+        return $stmt->execute([(int)$seats, (int)$id]);
+    }
+
+    public function cancel($id) {
+        $stmt = $this->db->prepare("UPDATE reservations SET status = 'geannuleerd' WHERE id = ?");
+        return $stmt->execute([(int)$id]);
+    }
+
+    public function getAllByLocation($locationId = '') {
+        $sql = "SELECT r.*, s.screening_time, m.title AS movie_title, h.name AS hall_name, h.capacity, l.id AS location_id, l.name AS location_name
+                FROM reservations r
+                JOIN screenings s ON r.screening_id = s.id
+                JOIN movies m ON s.movie_id = m.id
+                JOIN halls h ON s.hall_id = h.id
+                JOIN locations l ON h.location_id = l.id
+                WHERE 1=1";
+        $params = [];
+
+        if ($locationId !== '') {
+            $sql .= " AND l.id = ?";
+            $params[] = (int)$locationId;
+        }
+
+        $sql .= " ORDER BY l.name ASC, s.screening_time ASC, r.created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+}
+
+=== User.php ===
+<?php
+class User {
+    private $db;
+
+    public function __construct($pdo) {
+        $this->db = $pdo;
+    }
+
+    public function login($email, $password) {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        if ($user && password_verify($password, $user['password'])) {
+            return $user;
+        }
+        return false;
+    }
+
+    public function getById($id) {
+        $stmt = $this->db->prepare("SELECT id, name, email, role FROM users WHERE id = ?");
+        $stmt->execute([(int)$id]);
+        return $stmt->fetch();
+    }
+
+    public function updateAccount($id, $name, $email, $newPassword = '') {
+        if ($newPassword !== '') {
+            $hash = password_hash($newPassword, PASSWORD_DEFAULT);
+            $stmt = $this->db->prepare("UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?");
+            return $stmt->execute([$name, $email, $hash, (int)$id]);
+        }
+        $stmt = $this->db->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
+        return $stmt->execute([$name, $email, (int)$id]);
+    }
+}
+
+=== footer.php ===
+</main>
+<!-- Voettekst die op elke pagina onderaan wordt getoond -->
+<footer class="site-footer">
+    <div class="container">
+        <!-- Toont automatisch het huidige jaartal en de sitenaam -->
+        <p>&copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?></p>
+    </div>
+</footer>
+<!-- Laadt het algemene JavaScript-bestand voor interacties (zoals live filteren en reserveringsconcepten) -->
+<script src="/assets/js/main.js"></script>
+</body>
+</html>
+
+=== header.php ===
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Paginatitel wordt opgehaald uit de constante SITE_NAME in config.php -->
+    <title><?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+<!-- Bovenste navigatiebalk die op elke pagina wordt ingeladen -->
+<header class="site-header">
+    <div class="container header-inner">
+        <a href="/index.php" class="logo"><?php echo SITE_NAME; ?></a>
+        <nav class="main-nav">
+            <a href="/index.php">Films</a>
+            <a href="/my-reservations.php">Mijn Reserveringen</a>
+            <!-- Toon beheer- en uitloglinks alleen als een medewerker is ingelogd -->
+            <?php if (isLoggedIn()): ?>
+                <a href="/admin.php">Beheer</a>
+                <a href="/logout.php">Uitloggen</a>
+            <?php else: ?>
+                <a href="/login.php">Medewerker Login</a>
+            <?php endif; ?>
+        </nav>
+    </div>
+</header>
+<!-- Start van de hoofdinhoud (wordt afgesloten in footer.php) -->
+<main class="container">
+
+=== admin.php ===
+<?php
+require_once __DIR__ . '/classes/Database.php';
+requireLogin();
+
+$database = new Database();
+$db = $database->getConnection();
+$movieModel = new Movie($db);
+$reservationModel = new Reservation($db);
+$userModel = new User($db);
+
+$message = '';
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = '';
+    if (isset($_POST['action'])) {
+        $action = $_POST['action'];
+    }
+
+    if ($action === 'add_movie' || $action === 'update_movie') {
+        $title = '';
+        if (isset($_POST['title'])) {
+            $title = trim($_POST['title']);
+        }
+        $description = '';
+        if (isset($_POST['description'])) {
+            $description = trim($_POST['description']);
+        }
+        $genre = '';
+        if (isset($_POST['genre'])) {
+            $genre = trim($_POST['genre']);
+        }
+        $duration = 0;
+        if (isset($_POST['duration_minutes'])) {
+            $duration = (int)$_POST['duration_minutes'];
+        }
+
+        if ($action === 'add_movie') {
+            if ($title !== '' && $description !== '' && $genre !== '' && $duration > 0) {
+                $movieModel->addMovie($title, $description, $genre, $duration);
+                $message = 'Film toegevoegd.';
+            } else {
+                $error = 'Vul alle verplichte filmvelden in.';
+            }
+        } else {
+            $movieId = 0;
+            if (isset($_POST['movie_id'])) {
+                $movieId = $_POST['movie_id'];
+            }
+            if ($movieId > 0 && $title !== '' && $description !== '' && $genre !== '' && $duration > 0) {
+                $movieModel->updateMovie($movieId, $title, $description, $genre, $duration);
+                $message = 'Film bijgewerkt.';
+            } else {
+                $error = 'Ongeldige filmgegevens.';
+            }
+        }
+    } elseif ($action === 'delete_movie') {
+        $movieId = 0;
+        if (isset($_POST['movie_id'])) {
+            $movieId = $_POST['movie_id'];
+        }
+        if ($movieId > 0) {
+            $movieModel->deleteMovie($movieId);
+            $message = 'Film verwijderd.';
+        }
+    } elseif ($action === 'add_screening') {
+        $movieId = 0;
+        if (isset($_POST['movie_id'])) {
+            $movieId = $_POST['movie_id'];
+        }
+        $hallId = 0;
+        if (isset($_POST['hall_id'])) {
+            $hallId = $_POST['hall_id'];
+        }
+        $screeningTime = '';
+        if (isset($_POST['screening_time'])) {
+            $screeningTime = trim($_POST['screening_time']);
+        }
+
+        if ($movieId > 0 && $hallId > 0 && $screeningTime !== '') {
+            $movieModel->addScreening($movieId, $hallId, str_replace('T', ' ', $screeningTime));
+            $message = 'Voorstelling ingepland.';
+        } else {
+            $error = 'Vul alle velden voor de voorstelling in.';
+        }
+    } elseif ($action === 'delete_screening') {
+        $screeningId = 0;
+        if (isset($_POST['screening_id'])) {
+            $screeningId = $_POST['screening_id'];
+        }
+        if ($screeningId > 0) {
+            $movieModel->deleteScreening($screeningId);
+            $message = 'Voorstelling verwijderd.';
+        }
+    } elseif ($action === 'update_reservation') {
+        $reservationId = 0;
+        if (isset($_POST['reservation_id'])) {
+            $reservationId = $_POST['reservation_id'];
+        }
+        $seats = 0;
+        if (isset($_POST['seats'])) {
+            $seats = (int)$_POST['seats'];
+        }
+        if ($reservationId > 0 && $seats >= 1 && $seats <= 20) {
+            $reservationModel->updateSeats($reservationId, $seats);
+            $message = 'Reservering bijgewerkt.';
+        } else {
+            $error = 'Ongeldig aantal kaartjes.';
+        }
+    } elseif ($action === 'cancel_reservation') {
+        $reservationId = 0;
+        if (isset($_POST['reservation_id'])) {
+            $reservationId = $_POST['reservation_id'];
+        }
+        if ($reservationId > 0) {
+            $reservationModel->cancel($reservationId);
+            $message = 'Reservering geannuleerd.';
+        }
+    } elseif ($action === 'update_account') {
+        $name = '';
+        if (isset($_POST['name'])) {
+            $name = trim($_POST['name']);
+        }
+        $email = '';
+        if (isset($_POST['email'])) {
+            $email = trim($_POST['email']);
+        }
+        $newPassword = '';
+        if (isset($_POST['new_password'])) {
+            $newPassword = $_POST['new_password'];
+        }
+
+        if ($name !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $userModel->updateAccount($_SESSION['user_id'], $name, $email, $newPassword);
+            $_SESSION['user_name'] = $name;
+            $message = 'Accountgegevens bijgewerkt.';
+        } else {
+            $error = 'Vul een geldige naam en e-mailadres in.';
+        }
+    }
+}
+
+// Haal filter- en bewerkparameters uit de URL (GET)
+$selectedLocation = '';
+if (isset($_GET['location_id'])) {
+    $selectedLocation = trim($_GET['location_id']);
+}
+
+$editMovieId = 0;
+if (isset($_GET['edit_movie'])) {
+    $editMovieId = $_GET['edit_movie'];
+}
+
+// Als ?edit_movie=... in de URL staat, vul het filmformulier vooraf met de gegevens van die film
+$editMovie = null;
+if ($editMovieId > 0) {
+    $editMovie = $movieModel->getMovieById($editMovieId);
+}
+
+$movieFormAction = 'add_movie';
+$movieFormButton = 'Film Toevoegen';
+$editTitle = '';
+$editGenre = '';
+$editDuration = 120;
+$editDescription = '';
+
+if ($editMovie) {
+    $movieFormAction = 'update_movie';
+    $movieFormButton = 'Film Bijwerken';
+    $editTitle = $editMovie['title'];
+    $editGenre = $editMovie['genre'];
+    $editDuration = $editMovie['duration_minutes'];
+    $editDescription = $editMovie['description'];
+}
+
+// Haal alle benodigde data op voor de tabellen en dropdowns in het dashboard
+$movies = $movieModel->getAllMovies();
+$locations = $movieModel->getLocations();
+$halls = $movieModel->getHalls();
+$screenings = $movieModel->getFilteredScreenings('', '', $selectedLocation, '');
+$reservations = $reservationModel->getAllByLocation($selectedLocation);
+$currentUser = $userModel->getById($_SESSION['user_id']);
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<section class="page-header">
+    <h1>Medewerker Beheer</h1>
+    <p>Ingelogd als: <strong><?php echo sanitize($_SESSION['user_name']); ?></strong></p>
+</section>
+
+<?php if ($message !== ''): ?>
+    <div class="alert alert-success"><?php echo sanitize($message); ?></div>
+<?php endif; ?>
+<?php if ($error !== ''): ?>
+    <div class="alert alert-danger"><?php echo sanitize($error); ?></div>
+<?php endif; ?>
+
+<section class="admin-section">
+    <h2>1. Films Beheren</h2>
+    <form method="POST" action="/admin.php" class="card form-card">
+        <input type="hidden" name="action" value="<?php echo $movieFormAction; ?>">
+        <?php if ($editMovie): ?>
+            <input type="hidden" name="movie_id" value="<?php echo $editMovie['id']; ?>">
+        <?php endif; ?>
+
+        <div class="form-group">
+            <label for="title">Titel</label>
+            <input type="text" id="title" name="title" value="<?php echo sanitize($editTitle); ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="genre">Genre</label>
+            <input type="text" id="genre" name="genre" value="<?php echo sanitize($editGenre); ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="duration_minutes">Duur (minuten)</label>
+            <input type="number" id="duration_minutes" name="duration_minutes" min="1" value="<?php echo $editDuration; ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Beschrijving</label>
+            <textarea id="description" name="description" rows="3" required><?php echo sanitize($editDescription); ?></textarea>
+        </div>
+        <button type="submit" class="btn"><?php echo $movieFormButton; ?></button>
+        <?php if ($editMovie): ?>
+            <a href="/admin.php" class="btn btn-secondary">Annuleren</a>
+        <?php endif; ?>
+    </form>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Titel</th>
+                <th>Genre</th>
+                <th>Duur</th>
+                <th>Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($movies as $movie): ?>
+                <tr>
+                    <td><?php echo sanitize($movie['title']); ?></td>
+                    <td><?php echo sanitize($movie['genre']); ?></td>
+                    <td><?php echo $movie['duration_minutes']; ?> min</td>
+                    <td>
+                        <a href="/admin.php?edit_movie=<?php echo $movie['id']; ?>" class="btn btn-small">Wijzig</a>
+                        <form method="POST" action="/admin.php" class="inline-form confirm-cancel">
+                            <input type="hidden" name="action" value="delete_movie">
+                            <input type="hidden" name="movie_id" value="<?php echo $movie['id']; ?>">
+                            <button type="submit" class="btn btn-small btn-danger">Verwijder</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</section>
+
+<section class="admin-section">
+    <h2>2. Voorstellingen Inplannen &amp; Zaalbezetting</h2>
+    <form method="POST" action="/admin.php" class="card form-card">
+        <input type="hidden" name="action" value="add_screening">
+        <div class="form-group">
+            <label for="screening_movie_id">Film</label>
+            <select id="screening_movie_id" name="movie_id" required>
+                <?php foreach ($movies as $movie): ?>
+                    <option value="<?php echo $movie['id']; ?>"><?php echo sanitize($movie['title']); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="screening_hall_id">Locatie &amp; Zaal</label>
+            <select id="screening_hall_id" name="hall_id" required>
+                <?php foreach ($halls as $hall): ?>
+                    <option value="<?php echo $hall['id']; ?>">
+                        <?php echo sanitize($hall['location_name']); ?> - <?php echo sanitize($hall['name']); ?> (<?php echo $hall['capacity']; ?> stoelen)
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="screening_time">Datum &amp; Tijd</label>
+            <input type="datetime-local" id="screening_time" name="screening_time" required>
+        </div>
+        <button type="submit" class="btn">Voorstelling Inplannen</button>
+    </form>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Film</th>
+                <th>Locatie &amp; Zaal</th>
+                <th>Datum &amp; Tijd</th>
+                <th>Bezetting</th>
+                <th>Actie</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($screenings as $screening): ?>
+                <?php $formattedDateTime = date('d-m-Y H:i', strtotime($screening['screening_time'])); ?>
+                <tr>
+                    <td><?php echo sanitize($screening['title']); ?></td>
+                    <td><?php echo sanitize($screening['location_name']); ?> (<?php echo sanitize($screening['hall_name']); ?>)</td>
+                    <td><?php echo $formattedDateTime; ?></td>
+                    <td><?php echo $screening['booked_seats']; ?> / <?php echo $screening['capacity']; ?></td>
+                    <td>
+                        <form method="POST" action="/admin.php" class="inline-form confirm-cancel">
+                            <input type="hidden" name="action" value="delete_screening">
+                            <input type="hidden" name="screening_id" value="<?php echo $screening['screening_id']; ?>">
+                            <button type="submit" class="btn btn-small btn-danger">Verwijder</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</section>
+
+<section class="admin-section">
+    <h2>3. Reserveringen per Bioscooplocatie</h2>
+    <form method="GET" action="/admin.php" class="filter-form">
+        <select name="location_id">
+            <option value="">Alle locaties</option>
+            <?php foreach ($locations as $location): ?>
+                <?php
+                $selected = '';
+                if ((string)$selectedLocation === (string)$location['id']) {
+                    $selected = 'selected';
+                }
+                ?>
+                <option value="<?php echo $location['id']; ?>" <?php echo $selected; ?>>
+                    <?php echo sanitize($location['name']); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <button type="submit" class="btn">Filter</button>
+    </form>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Klant</th>
+                <th>Film &amp; Tijd</th>
+                <th>Locatie &amp; Zaal</th>
+                <th>Kaartjes</th>
+                <th>Status</th>
+                <th>Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($reservations as $reservation): ?>
+                <?php
+                $formattedDateTime = date('d-m-Y H:i', strtotime($reservation['screening_time']));
+                $badgeClass = 'badge-danger';
+                if ($reservation['status'] === 'actief') {
+                    $badgeClass = 'badge-success';
+                }
+                ?>
+                <tr>
+                    <td><?php echo sanitize($reservation['reservation_code']); ?></td>
+                    <td><?php echo sanitize($reservation['customer_name']); ?><br><small><?php echo sanitize($reservation['customer_email']); ?></small></td>
+                    <td><?php echo sanitize($reservation['movie_title']); ?><br><small><?php echo $formattedDateTime; ?></small></td>
+                    <td><?php echo sanitize($reservation['location_name']); ?> (<?php echo sanitize($reservation['hall_name']); ?>)</td>
+                    <td><?php echo $reservation['seats']; ?></td>
+                    <td>
+                        <span class="badge <?php echo $badgeClass; ?>">
+                            <?php echo sanitize($reservation['status']); ?>
+                        </span>
+                    </td>
+                    <td>
+                        <?php if ($reservation['status'] === 'actief'): ?>
+                            <form method="POST" action="/admin.php" class="inline-form">
+                                <input type="hidden" name="action" value="update_reservation">
+                                <input type="hidden" name="reservation_id" value="<?php echo $reservation['id']; ?>">
+                                <input type="number" name="seats" value="<?php echo $reservation['seats']; ?>" min="1" max="20" class="input-small">
+                                <button type="submit" class="btn btn-small">Wijzig</button>
+                            </form>
+                            <form method="POST" action="/admin.php" class="inline-form confirm-cancel">
+                                <input type="hidden" name="action" value="cancel_reservation">
+                                <input type="hidden" name="reservation_id" value="<?php echo $reservation['id']; ?>">
+                                <button type="submit" class="btn btn-small btn-danger">Annuleer</button>
+                            </form>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</section>
+
+<section class="admin-section">
+    <h2>4. Eigen Account Beheren</h2>
+    <form method="POST" action="/admin.php" class="card form-card">
+        <input type="hidden" name="action" value="update_account">
+        <div class="form-group">
+            <label for="acc_name">Naam</label>
+            <input type="text" id="acc_name" name="name" value="<?php echo sanitize($currentUser['name']); ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="acc_email">E-mailadres</label>
+            <input type="email" id="acc_email" name="email" value="<?php echo sanitize($currentUser['email']); ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="acc_password">Nieuw wachtwoord (laat leeg om te behouden)</label>
+            <input type="password" id="acc_password" name="new_password">
+        </div>
+        <button type="submit" class="btn">Account Opslaan</button>
+    </form>
+</section>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
+
+=== docker-compose.yml ===
+version: '3.8'
+
+# Definieert de 3 Docker-containers die samen de applicatie draaien
+services:
+  # 1. MySQL-databasecontainer
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: supergeheim
+      MYSQL_DATABASE: phples
+    ports:
+      - "3306:3306"
+
+  # 2. phpMyAdmin voor het visueel beheren van de database (bereikbaar via poort 6969)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin_ui
+    restart: always
+    ports:
+      - "6969:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+    depends_on:
+      - db
+
+  # 3. De PHP/Apache-webserver met onze website (bereikbaar via poort 6767)
+  website:
+    build: .
+    container_name: mijn_website
+    restart: always
+    ports:
+      - "6767:80"
+    volumes:
+      # Koppelt de lokale projectmap direct aan de webserver voor live wijzigingen
+      - .:/var/www/html
+    depends_on:
+      - db
+
+=== index.php ===
+<?php
+// Laad configuratie, database-instellingen en autoloader
+require_once __DIR__ . '/classes/Database.php';
+
+// Maak databaseverbinding en instantieer het Movie-model
+$database = new Database();
+$db = $database->getConnection();
+$movieModel = new Movie($db);
+
+// Lees eventuele filterwaarden uit de URL (?search=...&genre=...&location_id=...&date=...)
+$search = '';
+if (isset($_GET['search'])) {
+    $search = trim($_GET['search']);
+}
+
+$genre = '';
+if (isset($_GET['genre'])) {
+    $genre = trim($_GET['genre']);
+}
+
+$locationId = '';
+if (isset($_GET['location_id'])) {
+    $locationId = trim($_GET['location_id']);
+}
+
+$date = '';
+if (isset($_GET['date'])) {
+    $date = trim($_GET['date']);
+}
+
+// Haal gefilterde voorstellingen, unieke genres en locaties op uit de database
+$screenings = $movieModel->getFilteredScreenings($search, $genre, $locationId, $date);
+$genres = $movieModel->getGenres();
+$locations = $movieModel->getLocations();
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<section class="page-header">
+    <h1>Actueel Filmaanbod</h1>
+    <!-- Banner die via JavaScript (localStorage) zichtbaar wordt als de bezoeker nog een niet-afgeronde reservering heeft -->
+    <div id="unfinished-reservation-banner" class="alert alert-info hidden">
+        <span>Je hebt nog een niet-afgeronde reservering openstaan.</span>
+        <a id="resume-reservation-link" href="#" class="btn btn-small">Verder gaan</a>
+        <button type="button" id="discard-draft-btn" class="btn btn-small btn-secondary">Wissen</button>
+    </div>
+</section>
+
+<!-- Filterformulier om voorstellingen te zoeken op titel, genre, locatie of datum -->
+<section class="filter-section">
+    <form method="GET" action="/index.php" id="filter-form" class="filter-form">
+        <input type="text" name="search" id="filter-search" placeholder="Zoek op filmtitel..." value="<?php echo sanitize($search); ?>">
+        <select name="genre" id="filter-genre">
+            <option value="">Alle genres</option>
+            <?php foreach ($genres as $genreItem): ?>
+                <?php
+                $selected = '';
+                if ($genre === $genreItem) {
+                    $selected = 'selected';
+                }
+                ?>
+                <option value="<?php echo sanitize($genreItem); ?>" <?php echo $selected; ?>>
+                    <?php echo sanitize($genreItem); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <select name="location_id" id="filter-location">
+            <option value="">Alle locaties</option>
+            <?php foreach ($locations as $location): ?>
+                <?php
+                $selected = '';
+                if ((string)$locationId === (string)$location['id']) {
+                    $selected = 'selected';
+                }
+                ?>
+                <option value="<?php echo $location['id']; ?>" <?php echo $selected; ?>>
+                    <?php echo sanitize($location['name']); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <input type="date" name="date" id="filter-date" value="<?php echo sanitize($date); ?>">
+        <button type="submit" class="btn">Filteren</button>
+        <a href="/index.php" class="btn btn-secondary">Reset</a>
+    </form>
+</section>
+
+<!-- Overzicht van alle gevonden voorstellingen -->
+<section class="movies-grid" id="movies-grid">
+    <?php if (empty($screenings)): ?>
+        <p>Geen voorstellingen gevonden voor de gekozen filters.</p>
+    <?php else: ?>
+        <?php foreach ($screenings as $screening): ?>
+            <?php
+            // Bereken het aantal nog beschikbare stoelen en formatteer datum/tijd
+            $available = $screening['capacity'] - $screening['booked_seats'];
+            $screeningTimestamp = strtotime($screening['screening_time']);
+            $formattedDateTime = date('d-m-Y H:i', $screeningTimestamp);
+            $filterDate = date('Y-m-d', $screeningTimestamp);
+            ?>
+            <!-- data-* attributen worden door main.js gebruikt voor direct (live) filteren zonder pagina-reload -->
+            <article class="card movie-card"
+                     data-title="<?php echo strtolower(sanitize($screening['title'])); ?>"
+                     data-genre="<?php echo sanitize($screening['genre']); ?>"
+                     data-location="<?php echo $screening['location_id']; ?>"
+                     data-date="<?php echo $filterDate; ?>">
+                <div class="card-body">
+                    <h2><?php echo sanitize($screening['title']); ?></h2>
+                    <p class="meta"><?php echo sanitize($screening['genre']); ?> &bull; <?php echo $screening['duration_minutes']; ?> min</p>
+                    <p class="description"><?php echo sanitize($screening['description']); ?></p>
+                    <div class="screening-info">
+                        <p><strong>Locatie:</strong> <?php echo sanitize($screening['location_name']); ?> (<?php echo sanitize($screening['hall_name']); ?>)</p>
+                        <p><strong>Datum &amp; Tijd:</strong> <?php echo $formattedDateTime; ?></p>
+                        <p><strong>Beschikbaar:</strong> <?php echo $available; ?> van <?php echo $screening['capacity']; ?> stoelen</p>
+                    </div>
+                    <!-- Toon reserveerknop als er nog plek is, anders een 'Uitverkocht' label -->
+                    <?php if ($available > 0): ?>
+                        <a href="/reserve.php?screening_id=<?php echo $screening['screening_id']; ?>" class="btn">Kaartjes Reserveren</a>
+                    <?php else: ?>
+                        <span class="badge badge-danger">Uitverkocht</span>
+                    <?php endif; ?>
+                </div>
+            </article>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</section>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
+
+=== init.sql ===
+-- Maak de database aan (indien nog niet bestaand) en selecteer deze
+CREATE DATABASE IF NOT EXISTS phples CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE phples;
+
+-- Tabel voor de verschillende bioscooplocaties
+CREATE TABLE IF NOT EXISTS locations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS halls (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    location_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    capacity INT NOT NULL DEFAULT 60,
+    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS movies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL,
+    genre VARCHAR(50) NOT NULL,
+    duration_minutes INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS screenings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    movie_id INT NOT NULL,
+    hall_id INT NOT NULL,
+    screening_time DATETIME NOT NULL,
+    FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
+    FOREIGN KEY (hall_id) REFERENCES halls(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS reservations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    reservation_code VARCHAR(12) NOT NULL UNIQUE,
+    screening_id INT NOT NULL,
+    customer_name VARCHAR(100) NOT NULL,
+    customer_email VARCHAR(150) NOT NULL,
+    customer_phone VARCHAR(20) NOT NULL,
+    seats INT NOT NULL DEFAULT 1,
+    status ENUM('actief', 'geannuleerd') DEFAULT 'actief',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (screening_id) REFERENCES screenings(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'medewerker',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+INSERT INTO locations (id, name, city) VALUES
+(1, 'MBO Cinemas Leiden', 'Leiden'),
+(2, 'MBO Cinemas Gouda', 'Gouda'),
+(3, 'MBO Cinemas Alphen', 'Alphen a/d Rijn')
+ON DUPLICATE KEY UPDATE name=VALUES(name);
+
+INSERT INTO halls (id, location_id, name, capacity) VALUES
+(1, 1, 'Zaal 1 (Laser ULTRA)', 80),
+(2, 1, 'Zaal 2 (Comfort)', 50),
+(3, 2, 'Zaal 1 (Dolby Atmos)', 70),
+(4, 2, 'Zaal 2 (Classic)', 45),
+(5, 3, 'Zaal 1 (Main Stage)', 65)
+ON DUPLICATE KEY UPDATE name=VALUES(name);
+
+INSERT INTO movies (id, title, description, genre, duration_minutes) VALUES
+(1, 'Dune: Part Two', 'Paul Atreides verenigt zich met Chani en de Vrijmans terwijl hij zint op wraak tegen de samenzweerders die zijn familie hebben vernietigd.', 'Sci-Fi', 166),
+(2, 'Inside Out 2', 'Disney en Pixar keren terug naar het hoofd van tiener Riley, net wanneer het hoofdkwartier een plotselinge sloop ondergaat om ruimte te maken voor nieuwe emoties.', 'Animatie', 96),
+(3, 'Gladiator II', 'Jaren nadat hij getuige was van de dood van Maximus, moet Lucius zelf het Colosseum betreden nadat zijn thuis is veroverd door tirannieke keizers.', 'Actie', 148),
+(4, 'Oppenheimer', 'Het verhaal van de Amerikaanse wetenschapper J. Robert Oppenheimer en zijn rol in de ontwikkeling van de atoombom.', 'Drama', 180),
+(5, 'Spider-Man: Across the Spider-Verse', 'Miles Morales wordt door het multiversum geslingerd waar hij een team van Spider-Mensen tegenkomt die belast zijn met het beschermen van het bestaan ervan.', 'Animatie', 140)
+ON DUPLICATE KEY UPDATE title=VALUES(title);
+
+INSERT INTO screenings (id, movie_id, hall_id, screening_time) VALUES
+(1, 1, 1, DATE_ADD(CURRENT_DATE, INTERVAL '19:00:00' HOUR_SECOND)),
+(2, 1, 3, DATE_ADD(CURRENT_DATE, INTERVAL '20:30:00' HOUR_SECOND)),
+(3, 2, 2, DATE_ADD(CURRENT_DATE, INTERVAL '15:30:00' HOUR_SECOND)),
+(4, 2, 4, DATE_ADD(CURRENT_DATE, INTERVAL '16:00:00' HOUR_SECOND)),
+(5, 3, 1, DATE_ADD(DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY), INTERVAL '20:00:00' HOUR_SECOND)),
+(6, 4, 3, DATE_ADD(DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY), INTERVAL '19:15:00' HOUR_SECOND)),
+(7, 5, 2, DATE_ADD(DATE_ADD(CURRENT_DATE, INTERVAL 2 DAY), INTERVAL '14:30:00' HOUR_SECOND))
+ON DUPLICATE KEY UPDATE screening_time=VALUES(screening_time);
+
+INSERT INTO users (id, name, email, password, role) VALUES
+(1, 'Bioscoop Medewerker', 'admin@mbocinemas.nl', '$2y$10$f6F1jW09mUq2MhJ.uM9jtu6q7dFpLpP9P7d1P6Kz3K4i4zH44eZ4G', 'medewerker')
+ON DUPLICATE KEY UPDATE email=VALUES(email);
+
+=== login.php ===
+<?php
+require_once __DIR__ . '/classes/Database.php';
+
+// Als de medewerker al is ingelogd, stuur direct door naar het beheerpaneel
+if (isLoggedIn()) {
+    redirect('/admin.php');
+}
+
+$database = new Database();
+$db = $database->getConnection();
+$userModel = new User($db);
+$error = '';
+
+// Verwerk het inlogformulier bij een POST-verzoek
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = '';
+    if (isset($_POST['email'])) {
+        $email = trim($_POST['email']);
+    }
+
+    $password = '';
+    if (isset($_POST['password'])) {
+        $password = $_POST['password'];
+    }
+
+    // Controleer of beide velden zijn ingevuld
+    if ($email === '' || $password === '') {
+        $error = 'Vul zowel e-mailadres als wachtwoord in.';
+    } else {
+        // Controleer de inloggegevens via de User-class
+        $user = $userModel->login($email, $password);
+        if ($user) {
+            // Sla gebruikersgegevens op in de sessie en stuur door naar admin.php
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+            redirect('/admin.php');
+        } else {
+            $error = 'Ongeldige inloggegevens.';
+        }
+    }
+}
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<section class="page-header">
+    <h1>Medewerker Inloggen</h1>
+</section>
+
+<!-- Toon een foutmelding als het inloggen is mislukt -->
+<?php if ($error !== ''): ?>
+    <div class="alert alert-danger"><?php echo sanitize($error); ?></div>
+<?php endif; ?>
+
+<form method="POST" action="/login.php" class="card form-card">
+    <div class="form-group">
+        <label for="email">E-mailadres</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Wachtwoord</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit" class="btn">Inloggen</button>
+</form>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
+
+=== logout.php ===
+<?php
+require_once __DIR__ . '/classes/Database.php';
+
+// Verwijder alle sessievariabelen, vernietig de sessie en stuur terug naar de homepagina
+session_unset();
+session_destroy();
+redirect('/index.php');
+
+=== my-reservations.php ===
+<?php
+require_once __DIR__ . '/classes/Database.php';
+
+$database = new Database();
+$db = $database->getConnection();
+$reservationModel = new Reservation($db);
+
+// Haal e-mailadres op uit de URL (GET) of uit de opgeslagen cookie
+$email = '';
+if (isset($_GET['email'])) {
+    $email = trim($_GET['email']);
+} elseif (isset($_COOKIE['customer_email'])) {
+    $email = $_COOKIE['customer_email'];
+}
+
+$message = '';
+$error = '';
+
+// Verwerk acties van de klant: aantal kaartjes wijzigen of reservering annuleren
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = '';
+    if (isset($_POST['action'])) {
+        $action = $_POST['action'];
+    }
+
+    $reservationId = 0;
+    if (isset($_POST['reservation_id'])) {
+        $reservationId = $_POST['reservation_id'];
+    }
+
+    if (isset($_POST['email'])) {
+        $email = trim($_POST['email']);
+    }
+
+    if ($action === 'update') {
+        $seats = 0;
+        if (isset($_POST['seats'])) {
+            $seats = (int)$_POST['seats'];
+        }
+        // Controleer of het nieuwe aantal stoelen binnen de toegestane limiet (1 t/m 20) valt
+        if ($seats >= 1 && $seats <= 20) {
+            $reservationModel->updateSeats($reservationId, $seats);
+            $message = 'Het aantal kaartjes is bijgewerkt.';
+        } else {
+            $error = 'Kies een geldig aantal kaartjes (1 t/m 20).';
+        }
+    } elseif ($action === 'cancel') {
+        $reservationModel->cancel($reservationId);
+        $message = 'De reservering is geannuleerd.';
+    }
+}
+
+// Haal alle reserveringen op als er een geldig e-mailadres bekend is
+$reservations = [];
+if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $reservations = $reservationModel->getByEmail($email);
+}
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<section class="page-header">
+    <h1>Mijn Reserveringen</h1>
+</section>
+
+<!-- Zoekformulier om reserveringen op te vragen via e-mailadres -->
+<section class="filter-section">
+    <form method="GET" action="/my-reservations.php" class="filter-form">
+        <input type="email" name="email" placeholder="Vul uw e-mailadres in..." value="<?php echo sanitize($email); ?>" required>
+        <button type="submit" class="btn">Reserveringen Ophalen</button>
+    </form>
+</section>
+
+<!-- Meldingen voor geslaagde acties of fouten -->
+<?php if ($message !== ''): ?>
+    <div class="alert alert-success"><?php echo sanitize($message); ?></div>
+<?php endif; ?>
+<?php if ($error !== ''): ?>
+    <div class="alert alert-danger"><?php echo sanitize($error); ?></div>
+<?php endif; ?>
+
+<?php if ($email !== ''): ?>
+    <?php if (empty($reservations)): ?>
+        <p>Geen reserveringen gevonden voor <?php echo sanitize($email); ?>.</p>
+    <?php else: ?>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Film</th>
+                    <th>Locatie &amp; Zaal</th>
+                    <th>Datum &amp; Tijd</th>
+                    <th>Kaartjes</th>
+                    <th>Status</th>
+                    <th>Acties</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($reservations as $reservation): ?>
+                    <?php
+                    $formattedDateTime = date('d-m-Y H:i', strtotime($reservation['screening_time']));
+                    // Geef actieve reserveringen een groene badge en geannuleerde een rode
+                    $badgeClass = 'badge-danger';
+                    if ($reservation['status'] === 'actief') {
+                        $badgeClass = 'badge-success';
+                    }
+                    ?>
+                    <tr>
+                        <td><?php echo sanitize($reservation['reservation_code']); ?></td>
+                        <td><?php echo sanitize($reservation['movie_title']); ?></td>
+                        <td><?php echo sanitize($reservation['location_name']); ?> (<?php echo sanitize($reservation['hall_name']); ?>)</td>
+                        <td><?php echo $formattedDateTime; ?></td>
+                        <td><?php echo $reservation['seats']; ?></td>
+                        <td>
+                            <span class="badge <?php echo $badgeClass; ?>">
+                                <?php echo sanitize($reservation['status']); ?>
+                            </span>
+                        </td>
+                        <td>
+                            <!-- Alleen actieve reserveringen kunnen nog gewijzigd of geannuleerd worden -->
+                            <?php if ($reservation['status'] === 'actief'): ?>
+                                <form method="POST" action="/my-reservations.php" class="inline-form">
+                                    <input type="hidden" name="reservation_id" value="<?php echo $reservation['id']; ?>">
+                                    <input type="hidden" name="email" value="<?php echo sanitize($email); ?>">
+                                    <input type="hidden" name="action" value="update">
+                                    <input type="number" name="seats" value="<?php echo $reservation['seats']; ?>" min="1" max="20" class="input-small">
+                                    <button type="submit" class="btn btn-small">Wijzig</button>
+                                </form>
+                                <form method="POST" action="/my-reservations.php" class="inline-form confirm-cancel">
+                                    <input type="hidden" name="reservation_id" value="<?php echo $reservation['id']; ?>">
+                                    <input type="hidden" name="email" value="<?php echo sanitize($email); ?>">
+                                    <input type="hidden" name="action" value="cancel">
+                                    <button type="submit" class="btn btn-small btn-danger">Annuleer</button>
+                                </form>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+<?php endif; ?>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
+
+=== reserve.php ===
+<?php
+require_once __DIR__ . '/classes/Database.php';
+
+$database = new Database();
+$db = $database->getConnection();
+$movieModel = new Movie($db);
+$reservationModel = new Reservation($db);
+
+// Haal het voorstellings-ID op uit de URL (GET) of uit het verzonden formulier (POST)
+$screeningId = 0;
+if (isset($_GET['screening_id'])) {
+    $screeningId = $_GET['screening_id'];
+} elseif (isset($_POST['screening_id'])) {
+    $screeningId = $_POST['screening_id'];
+}
+
+// Haal de voorstelling op; als deze niet bestaat, stuur terug naar de homepagina
+$screening = $movieModel->getScreeningById($screeningId);
+if (!$screening) {
+    redirect('/index.php');
+}
+
+// Bereken vrije stoelen en formatteer datum/tijd en ticketprijs
+$availableSeats = $screening['capacity'] - $screening['booked_seats'];
+$formattedDateTime = date('d-m-Y H:i', strtotime($screening['screening_time']));
+$formattedTicketPrice = number_format(TICKET_PRICE, 2, ',', '.');
+$errors = [];
+$confirmationCode = '';
+
+// Vul naam en e-mail alvast in als deze eerder in een cookie zijn opgeslagen
+$customerName = '';
+if (isset($_COOKIE['customer_name'])) {
+    $customerName = $_COOKIE['customer_name'];
+}
+
+$customerEmail = '';
+if (isset($_COOKIE['customer_email'])) {
+    $customerEmail = $_COOKIE['customer_email'];
+}
+
+$customerPhone = '';
+$seats = 1;
+
+// Verwerk het reserveringsformulier bij een POST-verzoek
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['customer_name'])) {
+        $customerName = trim($_POST['customer_name']);
+    }
+    if (isset($_POST['customer_email'])) {
+        $customerEmail = trim($_POST['customer_email']);
+    }
+    if (isset($_POST['customer_phone'])) {
+        $customerPhone = trim($_POST['customer_phone']);
+    }
+    if (isset($_POST['seats'])) {
+        $seats = (int)$_POST['seats'];
+    }
+
+    // Server-side validatie van alle invoervelden
+    if ($customerName === '') {
+        $errors[] = 'Vul uw naam in.';
+    }
+    if (!filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Vul een geldig e-mailadres in.';
+    }
+    if ($customerPhone === '') {
+        $errors[] = 'Vul uw telefoonnummer in.';
+    }
+    if ($seats < 1 || $seats > $availableSeats) {
+        $errors[] = 'Kies een geldig aantal kaartjes (maximaal ' . $availableSeats . ').';
+    }
+
+    // Als er geen fouten zijn: sla reservering op en bewaar klantgegevens 30 dagen in cookies
+    if (empty($errors)) {
+        $confirmationCode = $reservationModel->create($screeningId, $customerName, $customerEmail, $customerPhone, $seats);
+        setcookie('customer_name', $customerName, time() + (30 * 24 * 60 * 60), '/');
+        setcookie('customer_email', $customerEmail, time() + (30 * 24 * 60 * 60), '/');
+    }
+}
+
+$formattedTotalPrice = number_format($seats * TICKET_PRICE, 2, ',', '.');
+
+require_once __DIR__ . '/includes/header.php';
+?>
+
+<section class="page-header">
+    <h1>Kaartjes Reserveren</h1>
+    <a href="/index.php" class="btn btn-secondary">Terug naar overzicht</a>
+</section>
+
+<!-- Toon bevestiging als de reservering succesvol is opgeslagen; data-clear-draft="true" wist het concept in localStorage -->
+<?php if ($confirmationCode !== ''): ?>
+    <div class="alert alert-success" id="reservation-confirmed" data-clear-draft="true">
+        <h2>Reservering Bevestigd!</h2>
+        <p>Bedankt <strong><?php echo sanitize($customerName); ?></strong>. Uw reservering is opgeslagen.</p>
+        <p><strong>Reserveringscode:</strong> <?php echo sanitize($confirmationCode); ?></p>
+        <p><strong>Film:</strong> <?php echo sanitize($screening['title']); ?></p>
+        <p><strong>Locatie:</strong> <?php echo sanitize($screening['location_name']); ?> (<?php echo sanitize($screening['hall_name']); ?>)</p>
+        <p><strong>Tijdstip:</strong> <?php echo $formattedDateTime; ?></p>
+        <p><strong>Aantal kaartjes:</strong> <?php echo $seats; ?> (&euro;<?php echo $formattedTotalPrice; ?>)</p>
+        <a href="/my-reservations.php?email=<?php echo urlencode($customerEmail); ?>" class="btn">Bekijk mijn reserveringen</a>
+    </div>
+<?php else: ?>
+    <!-- Samenvatting van de gekozen voorstelling -->
+    <div class="card screening-summary">
+        <h2><?php echo sanitize($screening['title']); ?></h2>
+        <p><strong>Locatie:</strong> <?php echo sanitize($screening['location_name']); ?> - <?php echo sanitize($screening['hall_name']); ?></p>
+        <p><strong>Datum &amp; Tijd:</strong> <?php echo $formattedDateTime; ?></p>
+        <p><strong>Beschikbare stoelen:</strong> <?php echo $availableSeats; ?></p>
+        <p><strong>Prijs per kaartje:</strong> &euro;<?php echo $formattedTicketPrice; ?></p>
+    </div>
+
+    <!-- Toon eventuele validatiefouten -->
+    <?php if (!empty($errors)): ?>
+        <div class="alert alert-danger">
+            <ul>
+                <?php foreach ($errors as $error): ?>
+                    <li><?php echo sanitize($error); ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <!-- Reserveringsformulier; main.js slaat wijzigingen tussentijds op in localStorage en berekent de totaalprijs live -->
+    <form method="POST" action="/reserve.php" id="reservation-form" class="card form-card" data-screening-id="<?php echo $screeningId; ?>">
+        <input type="hidden" name="screening_id" value="<?php echo $screeningId; ?>">
+
+        <div class="form-group">
+            <label for="customer_name">Naam</label>
+            <input type="text" id="customer_name" name="customer_name" value="<?php echo sanitize($customerName); ?>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="customer_email">E-mailadres</label>
+            <input type="email" id="customer_email" name="customer_email" value="<?php echo sanitize($customerEmail); ?>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="customer_phone">Telefoonnummer</label>
+            <input type="tel" id="customer_phone" name="customer_phone" value="<?php echo sanitize($customerPhone); ?>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="seats">Aantal kaartjes</label>
+            <input type="number" id="seats" name="seats" min="1" max="<?php echo $availableSeats; ?>" value="<?php echo $seats; ?>" required>
+        </div>
+
+        <p class="total-price">Totaalprijs: <strong id="total-price-display">&euro;<?php echo $formattedTotalPrice; ?></strong></p>
+
+        <button type="submit" class="btn">Reservering Bevestigen</button>
+    </form>
+<?php endif; ?>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
+

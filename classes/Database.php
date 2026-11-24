@@ -1,23 +1,75 @@
 <?php
-/**
- * Database class: beheert de PDO-verbinding met de MySQL-database.
- */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+define('SITE_NAME', 'MBO Cinemas');
+define('TICKET_PRICE', 11.50);
+
+spl_autoload_register(function ($className) {
+    $file = __DIR__ . '/' . $className . '.php';
+    if (file_exists($file)) {
+        require_once $file;
+    }
+});
+
+function sanitize($data) {
+    return htmlspecialchars(trim((string)$data), ENT_QUOTES, 'UTF-8');
+}
+
+function redirect($url) {
+    header("Location: " . $url);
+    exit;
+}
+
+function isLoggedIn() {
+    return isset($_SESSION['user_id']);
+}
+
+function requireLogin() {
+    if (!isLoggedIn()) {
+        redirect('/login.php');
+    }
+}
+
 class Database {
     private $pdo;
 
-    // Constructor maakt direct verbinding met de database zodra een Database-object wordt aangemaakt
     public function __construct() {
-        // DSN (Data Source Name) met host, poort, databasenaam en utf8mb4 voor speciale tekens/emoji's
-        $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+        $host = getenv('DB_HOST');
+        if (!$host) {
+            $host = 'db';
+        }
+
+        $dbname = getenv('DB_NAME');
+        if (!$dbname) {
+            $dbname = 'phples';
+        }
+
+        $user = getenv('DB_USER');
+        if (!$user) {
+            $user = 'root';
+        }
+
+        $pass = getenv('DB_PASS');
+        if (!$pass) {
+            $pass = 'supergeheim';
+        }
+
+        $port = getenv('DB_PORT');
+        if (!$port) {
+            $port = '3306';
+        }
+
+        $dsn = "mysql:host=" . $host . ";port=" . $port . ";dbname=" . $dbname . ";charset=utf8mb4";
         $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,       // Gooi een exception bij SQL-fouten
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,  // Geef resultaten standaard terug als associatieve array
-            PDO::ATTR_EMULATE_PREPARES => false                // Gebruik echte prepared statements (veiliger tegen SQL-injectie)
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false
         ];
-        $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+        $this->pdo = new PDO($dsn, $user, $pass, $options);
     }
 
-    // Geeft het actieve PDO-object terug zodat andere classes queries kunnen uitvoeren
     public function getConnection() {
         return $this->pdo;
     }

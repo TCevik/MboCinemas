@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
-// Beveilig deze pagina: alleen ingelogde medewerkers hebben toegang
+require_once __DIR__ . '/classes/Database.php';
 requireLogin();
 
 $database = new Database();
@@ -12,7 +11,6 @@ $userModel = new User($db);
 $message = '';
 $error = '';
 
-// Verwerk alle POST-acties vanuit de 4 beheersecties (films, voorstellingen, reserveringen, account)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = '';
     if (isset($_POST['action'])) {
