@@ -90,5 +90,5 @@ INSERT INTO screenings (id, movie_id, hall_id, screening_time) VALUES
 ON DUPLICATE KEY UPDATE screening_time=VALUES(screening_time);
 
 INSERT INTO users (id, name, email, password, role) VALUES
-(1, 'Bioscoop Medewerker', 'admin@mbocinemas.nl', '$2y$10$f6F1jW09mUq2MhJ.uM9jtu6q7dFpLpP9P7d1P6Kz3K4i4zH44eZ4G', 'medewerker')
+(1, 'Bioscoop Medewerker', 'admin@mbocinemas.nl', '$2y$10$si/kXOh4.L6qN3FZsLKXjugLDmKGbrF6VQvOxsVAQVz0poY1KzxhG', 'medewerker')
 ON DUPLICATE KEY UPDATE email=VALUES(email);
