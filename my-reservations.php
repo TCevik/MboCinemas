@@ -5,6 +5,7 @@ $database = new Database();
 $db = $database->getConnection();
 $reservationModel = new Reservation($db);
 
+// Haal e-mailadres op uit de URL (GET) of uit de opgeslagen cookie
 $email = '';
 if (isset($_GET['email'])) {
     $email = trim($_GET['email']);
@@ -15,6 +16,7 @@ if (isset($_GET['email'])) {
 $message = '';
 $error = '';
 
+// Verwerk acties van de klant: aantal kaartjes wijzigen of reservering annuleren
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = '';
     if (isset($_POST['action'])) {
@@ -35,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['seats'])) {
             $seats = (int)$_POST['seats'];
         }
+        // Controleer of het nieuwe aantal stoelen binnen de toegestane limiet (1 t/m 20) valt
         if ($seats >= 1 && $seats <= 20) {
             $reservationModel->updateSeats($reservationId, $seats);
             $message = 'Het aantal kaartjes is bijgewerkt.';
@@ -47,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Haal alle reserveringen op als er een geldig e-mailadres bekend is
 $reservations = [];
 if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $reservations = $reservationModel->getByEmail($email);
@@ -59,6 +63,7 @@ require_once __DIR__ . '/includes/header.php';
     <h1>Mijn Reserveringen</h1>
 </section>
 
+<!-- Zoekformulier om reserveringen op te vragen via e-mailadres -->
 <section class="filter-section">
     <form method="GET" action="/my-reservations.php" class="filter-form">
         <input type="email" name="email" placeholder="Vul uw e-mailadres in..." value="<?php echo sanitize($email); ?>" required>
@@ -66,6 +71,7 @@ require_once __DIR__ . '/includes/header.php';
     </form>
 </section>
 
+<!-- Meldingen voor geslaagde acties of fouten -->
 <?php if ($message !== ''): ?>
     <div class="alert alert-success"><?php echo sanitize($message); ?></div>
 <?php endif; ?>
@@ -93,6 +99,7 @@ require_once __DIR__ . '/includes/header.php';
                 <?php foreach ($reservations as $reservation): ?>
                     <?php
                     $formattedDateTime = date('d-m-Y H:i', strtotime($reservation['screening_time']));
+                    // Geef actieve reserveringen een groene badge en geannuleerde een rode
                     $badgeClass = 'badge-danger';
                     if ($reservation['status'] === 'actief') {
                         $badgeClass = 'badge-success';
@@ -110,6 +117,7 @@ require_once __DIR__ . '/includes/header.php';
                             </span>
                         </td>
                         <td>
+                            <!-- Alleen actieve reserveringen kunnen nog gewijzigd of geannuleerd worden -->
                             <?php if ($reservation['status'] === 'actief'): ?>
                                 <form method="POST" action="/my-reservations.php" class="inline-form">
                                     <input type="hidden" name="reservation_id" value="<?php echo $reservation['id']; ?>">

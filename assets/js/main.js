@@ -1,11 +1,17 @@
+// Wacht tot de volledige HTML-pagina is geladen voordat JavaScript wordt uitgevoerd
 document.addEventListener('DOMContentLoaded', function () {
+    // Sleutel waaronder een niet-afgeronde reservering in localStorage wordt bewaard
     const DRAFT_KEY = 'mbo_cinemas_reservation_draft';
 
+    // 1. CONCEPT WISSEN NA BEVESTIGING
+    // Als de reservering is bevestigd (reserve.php), verwijder dan het opgeslagen concept
     const confirmedBox = document.getElementById('reservation-confirmed');
     if (confirmedBox && confirmedBox.dataset.clearDraft === 'true') {
         localStorage.removeItem(DRAFT_KEY);
     }
 
+    // 2. BANNER VOOR NIET-AFGERONDE RESERVERING (index.php)
+    // Controleert of er nog een concept in localStorage staat en toont zo ja de hervat-banner
     const banner = document.getElementById('unfinished-reservation-banner');
     const resumeLink = document.getElementById('resume-reservation-link');
     const discardBtn = document.getElementById('discard-draft-btn');
@@ -19,9 +25,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     banner.classList.remove('hidden');
                 }
             } catch (e) {
+                // Verwijder corrupte data uit localStorage
                 localStorage.removeItem(DRAFT_KEY);
             }
         }
+        // Knop om het opgeslagen concept handmatig te wissen
         if (discardBtn) {
             discardBtn.addEventListener('click', function () {
                 localStorage.removeItem(DRAFT_KEY);
@@ -30,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // 3. LIVE FILTEREN VAN FILMS (index.php)
+    // Filtert de filmkaarten direct in de browser zonder de pagina opnieuw te laden
     const searchInput = document.getElementById('filter-search');
     const genreSelect = document.getElementById('filter-genre');
     const locationSelect = document.getElementById('filter-location');
@@ -48,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const matchLocation = location === '' || card.dataset.location === location;
             const matchDate = date === '' || card.dataset.date === date;
 
+            // Toon de kaart alleen als alle actieve filters overeenkomen
             if (matchTitle && matchGenre && matchLocation && matchDate) {
                 card.classList.remove('hidden');
             } else {
@@ -63,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (dateInput) dateInput.addEventListener('change', filterMovies);
     }
 
+    // 4. RESERVERINGSFORMULIER: CONCEPT OPSLAAN, TOTAALPRIJS & VALIDATIE (reserve.php)
     const reservationForm = document.getElementById('reservation-form');
     if (reservationForm) {
         const screeningId = reservationForm.dataset.screeningId;
@@ -72,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const seatsInput = document.getElementById('seats');
         const priceDisplay = document.getElementById('total-price-display');
 
+        // Herstel eerder ingevulde gegevens als het concept bij deze voorstelling hoort
         const saved = localStorage.getItem(DRAFT_KEY);
         if (saved) {
             try {
@@ -87,12 +100,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+        // Berekent en toont de totaalprijs live (aantal kaartjes * €11,50)
         function updateTotalPrice() {
             const count = parseInt(seatsInput.value, 10) || 0;
             const total = (count * 11.50).toFixed(2).replace('.', ',');
             priceDisplay.textContent = '\u20AC' + total;
         }
 
+        // Slaat de huidige invoer tussentijds op in localStorage
         function saveDraft() {
             const draft = {
                 screening_id: screeningId,
@@ -104,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
         }
 
+        // Luister naar wijzigingen in alle invoervelden
         [nameInput, emailInput, phoneInput, seatsInput].forEach(function (input) {
             input.addEventListener('input', function () {
                 saveDraft();
@@ -115,6 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateTotalPrice();
 
+        // Client-side validatie en bevestigingspop-up bij het versturen van het formulier
         reservationForm.addEventListener('submit', function (e) {
             const seats = parseInt(seatsInput.value, 10);
             const maxSeats = parseInt(seatsInput.max, 10);
@@ -134,6 +151,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // 5. BEVESTIGINGSPOP-UP VOOR VERWIJDEREN / ANNULEREN
+    // Voorkomt dat bezoekers of medewerkers per ongeluk iets verwijderen of annuleren
     document.querySelectorAll('.confirm-cancel').forEach(function (form) {
         form.addEventListener('submit', function (e) {
             if (!confirm('Weet u zeker dat u deze actie wilt uitvoeren?')) {

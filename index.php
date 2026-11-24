@@ -1,10 +1,13 @@
 <?php
+// Laad configuratie, database-instellingen en autoloader
 require_once __DIR__ . '/config.php';
 
+// Maak databaseverbinding en instantieer het Movie-model
 $database = new Database();
 $db = $database->getConnection();
 $movieModel = new Movie($db);
 
+// Lees eventuele filterwaarden uit de URL (?search=...&genre=...&location_id=...&date=...)
 $search = '';
 if (isset($_GET['search'])) {
     $search = trim($_GET['search']);
@@ -25,6 +28,7 @@ if (isset($_GET['date'])) {
     $date = trim($_GET['date']);
 }
 
+// Haal gefilterde voorstellingen, unieke genres en locaties op uit de database
 $screenings = $movieModel->getFilteredScreenings($search, $genre, $locationId, $date);
 $genres = $movieModel->getGenres();
 $locations = $movieModel->getLocations();
@@ -34,6 +38,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <section class="page-header">
     <h1>Actueel Filmaanbod</h1>
+    <!-- Banner die via JavaScript (localStorage) zichtbaar wordt als de bezoeker nog een niet-afgeronde reservering heeft -->
     <div id="unfinished-reservation-banner" class="alert alert-info hidden">
         <span>Je hebt nog een niet-afgeronde reservering openstaan.</span>
         <a id="resume-reservation-link" href="#" class="btn btn-small">Verder gaan</a>
@@ -41,6 +46,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
+<!-- Filterformulier om voorstellingen te zoeken op titel, genre, locatie of datum -->
 <section class="filter-section">
     <form method="GET" action="/index.php" id="filter-form" class="filter-form">
         <input type="text" name="search" id="filter-search" placeholder="Zoek op filmtitel..." value="<?php echo sanitize($search); ?>">
@@ -78,17 +84,20 @@ require_once __DIR__ . '/includes/header.php';
     </form>
 </section>
 
+<!-- Overzicht van alle gevonden voorstellingen -->
 <section class="movies-grid" id="movies-grid">
     <?php if (empty($screenings)): ?>
         <p>Geen voorstellingen gevonden voor de gekozen filters.</p>
     <?php else: ?>
         <?php foreach ($screenings as $screening): ?>
             <?php
+            // Bereken het aantal nog beschikbare stoelen en formatteer datum/tijd
             $available = $screening['capacity'] - $screening['booked_seats'];
             $screeningTimestamp = strtotime($screening['screening_time']);
             $formattedDateTime = date('d-m-Y H:i', $screeningTimestamp);
             $filterDate = date('Y-m-d', $screeningTimestamp);
             ?>
+            <!-- data-* attributen worden door main.js gebruikt voor direct (live) filteren zonder pagina-reload -->
             <article class="card movie-card"
                      data-title="<?php echo strtolower(sanitize($screening['title'])); ?>"
                      data-genre="<?php echo sanitize($screening['genre']); ?>"
@@ -103,6 +112,7 @@ require_once __DIR__ . '/includes/header.php';
                         <p><strong>Datum &amp; Tijd:</strong> <?php echo $formattedDateTime; ?></p>
                         <p><strong>Beschikbaar:</strong> <?php echo $available; ?> van <?php echo $screening['capacity']; ?> stoelen</p>
                     </div>
+                    <!-- Toon reserveerknop als er nog plek is, anders een 'Uitverkocht' label -->
                     <?php if ($available > 0): ?>
                         <a href="/reserve.php?screening_id=<?php echo $screening['screening_id']; ?>" class="btn">Kaartjes Reserveren</a>
                     <?php else: ?>

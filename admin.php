@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+// Beveilig deze pagina: alleen ingelogde medewerkers hebben toegang
 requireLogin();
 
 $database = new Database();
@@ -11,6 +12,7 @@ $userModel = new User($db);
 $message = '';
 $error = '';
 
+// Verwerk alle POST-acties vanuit de 4 beheersecties (films, voorstellingen, reserveringen, account)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = '';
     if (isset($_POST['action'])) {
@@ -140,6 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Haal filter- en bewerkparameters uit de URL (GET)
 $selectedLocation = '';
 if (isset($_GET['location_id'])) {
     $selectedLocation = trim($_GET['location_id']);
@@ -150,6 +153,7 @@ if (isset($_GET['edit_movie'])) {
     $editMovieId = $_GET['edit_movie'];
 }
 
+// Als ?edit_movie=... in de URL staat, vul het filmformulier vooraf met de gegevens van die film
 $editMovie = null;
 if ($editMovieId > 0) {
     $editMovie = $movieModel->getMovieById($editMovieId);
@@ -171,6 +175,7 @@ if ($editMovie) {
     $editDescription = $editMovie['description'];
 }
 
+// Haal alle benodigde data op voor de tabellen en dropdowns in het dashboard
 $movies = $movieModel->getAllMovies();
 $locations = $movieModel->getLocations();
 $halls = $movieModel->getHalls();

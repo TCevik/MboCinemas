@@ -6,6 +6,7 @@ $db = $database->getConnection();
 $movieModel = new Movie($db);
 $reservationModel = new Reservation($db);
 
+// Haal het voorstellings-ID op uit de URL (GET) of uit het verzonden formulier (POST)
 $screeningId = 0;
 if (isset($_GET['screening_id'])) {
     $screeningId = $_GET['screening_id'];
@@ -13,17 +14,20 @@ if (isset($_GET['screening_id'])) {
     $screeningId = $_POST['screening_id'];
 }
 
+// Haal de voorstelling op; als deze niet bestaat, stuur terug naar de homepagina
 $screening = $movieModel->getScreeningById($screeningId);
 if (!$screening) {
     redirect('/index.php');
 }
 
+// Bereken vrije stoelen en formatteer datum/tijd en ticketprijs
 $availableSeats = $screening['capacity'] - $screening['booked_seats'];
 $formattedDateTime = date('d-m-Y H:i', strtotime($screening['screening_time']));
 $formattedTicketPrice = number_format(TICKET_PRICE, 2, ',', '.');
 $errors = [];
 $confirmationCode = '';
 
+// Vul naam en e-mail alvast in als deze eerder in een cookie zijn opgeslagen
 $customerName = '';
 if (isset($_COOKIE['customer_name'])) {
     $customerName = $_COOKIE['customer_name'];
@@ -37,6 +41,7 @@ if (isset($_COOKIE['customer_email'])) {
 $customerPhone = '';
 $seats = 1;
 
+// Verwerk het reserveringsformulier bij een POST-verzoek
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['customer_name'])) {
         $customerName = trim($_POST['customer_name']);
@@ -51,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $seats = (int)$_POST['seats'];
     }
 
+    // Server-side validatie van alle invoervelden
     if ($customerName === '') {
         $errors[] = 'Vul uw naam in.';
     }
@@ -64,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Kies een geldig aantal kaartjes (maximaal ' . $availableSeats . ').';
     }
 
+    // Als er geen fouten zijn: sla reservering op en bewaar klantgegevens 30 dagen in cookies
     if (empty($errors)) {
         $confirmationCode = $reservationModel->create($screeningId, $customerName, $customerEmail, $customerPhone, $seats);
         setcookie('customer_name', $customerName, time() + (30 * 24 * 60 * 60), '/');
@@ -81,6 +88,7 @@ require_once __DIR__ . '/includes/header.php';
     <a href="/index.php" class="btn btn-secondary">Terug naar overzicht</a>
 </section>
 
+<!-- Toon bevestiging als de reservering succesvol is opgeslagen; data-clear-draft="true" wist het concept in localStorage -->
 <?php if ($confirmationCode !== ''): ?>
     <div class="alert alert-success" id="reservation-confirmed" data-clear-draft="true">
         <h2>Reservering Bevestigd!</h2>
@@ -93,6 +101,7 @@ require_once __DIR__ . '/includes/header.php';
         <a href="/my-reservations.php?email=<?php echo urlencode($customerEmail); ?>" class="btn">Bekijk mijn reserveringen</a>
     </div>
 <?php else: ?>
+    <!-- Samenvatting van de gekozen voorstelling -->
     <div class="card screening-summary">
         <h2><?php echo sanitize($screening['title']); ?></h2>
         <p><strong>Locatie:</strong> <?php echo sanitize($screening['location_name']); ?> - <?php echo sanitize($screening['hall_name']); ?></p>
@@ -101,6 +110,7 @@ require_once __DIR__ . '/includes/header.php';
         <p><strong>Prijs per kaartje:</strong> &euro;<?php echo $formattedTicketPrice; ?></p>
     </div>
 
+    <!-- Toon eventuele validatiefouten -->
     <?php if (!empty($errors)): ?>
         <div class="alert alert-danger">
             <ul>
@@ -111,6 +121,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     <?php endif; ?>
 
+    <!-- Reserveringsformulier; main.js slaat wijzigingen tussentijds op in localStorage en berekent de totaalprijs live -->
     <form method="POST" action="/reserve.php" id="reservation-form" class="card form-card" data-screening-id="<?php echo $screeningId; ?>">
         <input type="hidden" name="screening_id" value="<?php echo $screeningId; ?>">
 

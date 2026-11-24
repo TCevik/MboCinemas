@@ -1,6 +1,8 @@
 version: '3.8'
 
+# Definieert de 3 Docker-containers die samen de applicatie draaien
 services:
+  # 1. MySQL-databasecontainer
   db:
     image: mysql:8.0
     container_name: mysql_db
@@ -11,6 +13,7 @@ services:
     ports:
       - "3306:3306"
 
+  # 2. phpMyAdmin voor het visueel beheren van de database (bereikbaar via poort 6969)
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: phpmyadmin_ui
@@ -23,6 +26,7 @@ services:
     depends_on:
       - db
 
+  # 3. De PHP/Apache-webserver met onze website (bereikbaar via poort 6767)
   website:
     build: .
     container_name: mijn_website
@@ -30,6 +34,7 @@ services:
     ports:
       - "6767:80"
     volumes:
+      # Koppelt de lokale projectmap direct aan de webserver voor live wijzigingen
       - .:/var/www/html
     depends_on:
       - db

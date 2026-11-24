@@ -1,6 +1,8 @@
+-- Maak de database aan (indien nog niet bestaand) en selecteer deze
 CREATE DATABASE IF NOT EXISTS phples CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE phples;
 
+-- Tabel voor de verschillende bioscooplocaties
 CREATE TABLE IF NOT EXISTS locations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,

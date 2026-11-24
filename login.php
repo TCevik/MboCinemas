@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 
+// Als de medewerker al is ingelogd, stuur direct door naar het beheerpaneel
 if (isLoggedIn()) {
     redirect('/admin.php');
 }
@@ -10,6 +11,7 @@ $db = $database->getConnection();
 $userModel = new User($db);
 $error = '';
 
+// Verwerk het inlogformulier bij een POST-verzoek
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = '';
     if (isset($_POST['email'])) {
@@ -21,11 +23,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'];
     }
 
+    // Controleer of beide velden zijn ingevuld
     if ($email === '' || $password === '') {
         $error = 'Vul zowel e-mailadres als wachtwoord in.';
     } else {
+        // Controleer de inloggegevens via de User-class
         $user = $userModel->login($email, $password);
         if ($user) {
+            // Sla gebruikersgegevens op in de sessie en stuur door naar admin.php
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['name'];
             redirect('/admin.php');
@@ -42,6 +47,7 @@ require_once __DIR__ . '/includes/header.php';
     <h1>Medewerker Inloggen</h1>
 </section>
 
+<!-- Toon een foutmelding als het inloggen is mislukt -->
 <?php if ($error !== ''): ?>
     <div class="alert alert-danger"><?php echo sanitize($error); ?></div>
 <?php endif; ?>
