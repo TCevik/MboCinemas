@@ -1,0 +1,438 @@
+/* ==========================================================================
+   MBO CINEMAS - SUPER NETTE & OVERZICHTELIJKE STYLING
+   ========================================================================== */
+
+:root {
+    --bg-dark: #0b0f19;
+    --bg-card: #151d30;
+    --bg-card-hover: #1c2742;
+    --bg-nav: rgba(11, 15, 25, 0.95);
+    --primary: #f59e0b;
+    --primary-hover: #d97706;
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --border: #263352;
+    --danger: #ef4444;
+    --success: #10b981;
+    --radius: 10px;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ================= Navbar ================= */
+.navbar {
+    background: var(--bg-nav);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: 0.5px;
+}
+
+.brand span {
+    color: var(--primary);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    list-style: none;
+}
+
+.nav-links a {
+    color: var(--text-main);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: var(--primary);
+}
+
+.btn-nav {
+    background: var(--border);
+    padding: 8px 16px;
+    border-radius: var(--radius);
+}
+
+/* ================= Hero / Banner ================= */
+.hero {
+    padding: 40px 0 20px;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ================= Zoek- en filterbalk ================= */
+.filter-bar {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin: 30px 0;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: 15px;
+    align-items: end;
+}
+
+@media (max-width: 900px) {
+    .filter-bar {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-control {
+    background: #0f1626;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+}
+
+/* ================= Buttons ================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--primary);
+    color: #0b0f19;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.btn:hover {
+    background: var(--primary-hover);
+    color: #000;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--border);
+    color: var(--text-main);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    color: #fff;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* ================= Movie Grid & Cards ================= */
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 25px;
+    margin-bottom: 50px;
+}
+
+.movie-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.movie-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+}
+
+.movie-poster {
+    width: 100%;
+    height: 360px;
+    object-fit: cover;
+    background-color: #0b0f19;
+}
+
+.movie-info {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.movie-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.badge {
+    background: #1f2b48;
+    color: var(--primary);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+.movie-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.movie-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ================= Movie Detail Page ================= */
+.movie-detail {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 30px;
+    margin: 40px 0;
+}
+
+@media (max-width: 768px) {
+    .movie-detail {
+        grid-template-columns: 1fr;
+    }
+}
+
+.movie-detail-poster {
+    width: 100%;
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.screening-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f1626;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 12px;
+}
+
+/* ================= Alert / Flash Messages ================= */
+.alert {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid var(--success);
+    color: #6ee7b7;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid var(--danger);
+    color: #fca5a5;
+}
+
+.alert-info {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid var(--primary);
+    color: #fde68a;
+}
+
+/* ================= Tables ================= */
+.table-responsive {
+    overflow-x: auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background: #0f1626;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+tr:hover {
+    background-color: var(--bg-card-hover);
+}
+
+/* ================= Forms & Card Boxes ================= */
+.box-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0 20px;
+}
+
+.admin-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 15px;
+}
+
+/* ================= Footer ================= */
+footer {
+    background: #070a12;
+    border-top: 1px solid var(--border);
+    padding: 30px 0;
+    margin-top: auto;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}

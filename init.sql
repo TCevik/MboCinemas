@@ -1,0 +1,103 @@
+-- Database schema voor MBO Cinemas
+CREATE DATABASE IF NOT EXISTS phples CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE phples;
+
+-- 1. Bioscooplocaties
+CREATE TABLE IF NOT EXISTS locations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL
+) ENGINE=InnoDB;
+
+-- 2. Zalen per locatie
+CREATE TABLE IF NOT EXISTS halls (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    location_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    capacity INT NOT NULL DEFAULT 60,
+    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 3. Films
+CREATE TABLE IF NOT EXISTS movies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL,
+    genre VARCHAR(50) NOT NULL,
+    duration_minutes INT NOT NULL,
+    poster_url VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- 4. Vertoningen (Film gepland in een zaal)
+CREATE TABLE IF NOT EXISTS screenings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    movie_id INT NOT NULL,
+    hall_id INT NOT NULL,
+    screening_time DATETIME NOT NULL,
+    FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
+    FOREIGN KEY (hall_id) REFERENCES halls(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 5. Reserveringen
+CREATE TABLE IF NOT EXISTS reservations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    reservation_code VARCHAR(12) NOT NULL UNIQUE,
+    screening_id INT NOT NULL,
+    customer_name VARCHAR(100) NOT NULL,
+    customer_email VARCHAR(150) NOT NULL,
+    customer_phone VARCHAR(20) NOT NULL,
+    seats INT NOT NULL DEFAULT 1,
+    status ENUM('actief', 'geannuleerd') DEFAULT 'actief',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (screening_id) REFERENCES screenings(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 6. Medewerkers / Beheerders
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'medewerker',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- Initial data seed
+INSERT INTO locations (id, name, city) VALUES
+(1, 'MBO Cinemas Leiden', 'Leiden'),
+(2, 'MBO Cinemas Gouda', 'Gouda'),
+(3, 'MBO Cinemas Alphen', 'Alphen a/d Rijn')
+ON DUPLICATE KEY UPDATE name=VALUES(name);
+
+INSERT INTO halls (id, location_id, name, capacity) VALUES
+(1, 1, 'Zaal 1 (Laser ULTRA)', 80),
+(2, 1, 'Zaal 2 (Comfort)', 50),
+(3, 2, 'Zaal 1 (Dolby Atmos)', 70),
+(4, 2, 'Zaal 2 (Classic)', 45),
+(5, 3, 'Zaal 1 (Main Stage)', 65)
+ON DUPLICATE KEY UPDATE name=VALUES(name);
+
+INSERT INTO movies (id, title, description, genre, duration_minutes, poster_url) VALUES
+(1, 'Dune: Part Two', 'Paul Atreides verenigt zich met Chani en de Vrijmans terwijl hij zint op wraak tegen de samenzweerders die zijn familie hebben vernietigd.', 'Sci-Fi', 166, 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&q=80'),
+(2, 'Inside Out 2', 'Disney en Pixar keren terug naar het hoofd van tiener Riley, net wanneer het hoofdkwartier een plotselinge sloop ondergaat om ruimte te maken voor nieuwe emoties.', 'Animatie', 96, 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=500&q=80'),
+(3, 'Gladiator II', 'Jaren nadat hij getuige was van de dood van Maximus, moet Lucius zelf het Colosseum betreden nadat zijn thuis is veroverd door tirannieke keizers.', 'Actie', 148, 'https://images.unsplash.com/photo-1514306191717-452ec28c7814?w=500&q=80'),
+(4, 'Oppenheimer', 'Het verhaal van de Amerikaanse wetenschapper J. Robert Oppenheimer en zijn rol in de ontwikkeling van de atoombom.', 'Drama', 180, 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=500&q=80'),
+(5, 'Spider-Man: Across the Spider-Verse', 'Miles Morales wordt door het multiversum geslingerd waar hij een team van Spider-Mensen tegenkomt die belast zijn met het beschermen van het bestaan ervan.', 'Animatie', 140, 'https://images.unsplash.com/photo-1635805737707-575885ab0820?w=500&q=80')
+ON DUPLICATE KEY UPDATE title=VALUES(title);
+
+-- Voorbeeldvoorstellingen voor vandaag en komende dagen
+INSERT INTO screenings (id, movie_id, hall_id, screening_time) VALUES
+(1, 1, 1, DATE_ADD(CURRENT_DATE, INTERVAL '19:00:00' HOUR_SECOND)),
+(2, 1, 3, DATE_ADD(CURRENT_DATE, INTERVAL '20:30:00' HOUR_SECOND)),
+(3, 2, 2, DATE_ADD(CURRENT_DATE, INTERVAL '15:30:00' HOUR_SECOND)),
+(4, 2, 4, DATE_ADD(CURRENT_DATE, INTERVAL '16:00:00' HOUR_SECOND)),
+(5, 3, 1, DATE_ADD(DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY), INTERVAL '20:00:00' HOUR_SECOND)),
+(6, 4, 3, DATE_ADD(DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY), INTERVAL '19:15:00' HOUR_SECOND)),
+(7, 5, 2, DATE_ADD(DATE_ADD(CURRENT_DATE, INTERVAL 2 DAY), INTERVAL '14:30:00' HOUR_SECOND))
+ON DUPLICATE KEY UPDATE screening_time=VALUES(screening_time);
+
+-- Standaard medewerker account: admin@mbocinemas.nl / Welkom123!
+INSERT INTO users (id, name, email, password, role) VALUES
+(1, 'Bioscoop Medewerker', 'admin@mbocinemas.nl', '$2y$10$f6F1jW09mUq2MhJ.uM9jtu6q7dFpLpP9P7d1P6Kz3K4i4zH44eZ4G', 'medewerker')
+ON DUPLICATE KEY UPDATE email=VALUES(email);
